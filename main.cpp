@@ -7,6 +7,7 @@
 #include "headers/CGM.h"
 #include "headers/UI.h"
 #include "headers/Profile.h"
+#include "mainwindow.h"
 
 int main(int argc, char *argv[])
 {
@@ -31,6 +32,9 @@ int main(int argc, char *argv[])
     qDebug() << "Active Profile:" << pump.getActiveProfile()->getName();
 
     pump.deliverBolus(5.0);
+
+    MainWindow w;
+    w.show();
 
     return a.exec();
 }
