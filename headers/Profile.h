@@ -17,13 +17,16 @@ public:
     void setName(const QString &name);
 
     double getBasalRate() const;
-    void setBasalRate(double rate);
+    void setBasalRate(double rate) {basal_rates = rate;}
 
     double getCarbRatio() const;
-    void setCarbRatio(double ratio);
+    void setCarbRatio(double ratio) {carb_ratio = ratio;}
 
     double getCorrectionFactor() const;
-    void setCorrectionFactor(double factor);
+    void setCorrectionFactor(double factor) {correction_factor = factor;}
+
+    double getTarget() const;
+    void setTarget(double tar) {target = tar;}
 
 private:
     QString profileName;
