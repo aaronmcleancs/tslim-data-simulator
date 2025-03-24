@@ -23,11 +23,13 @@ public:
     CGM* getCGM() const;
     UI* getUI() const;
 
-    void addProfile(Profile* profile);
-    void removeProfile(Profile* profile);
+    void createProfile(QString n, double br, double cr, double cf, double t);
+    void removeProfile(QString name);
+    void updateProfile(QString name, QString setting, double val);
+    int findIndex(QString name);
     QVector<Profile*> getProfiles() const;
 
-    void selectActiveProfile(Profile* profile);
+    void selectActiveProfile(QString name);
     Profile* getActiveProfile() const;
 
 public slots:

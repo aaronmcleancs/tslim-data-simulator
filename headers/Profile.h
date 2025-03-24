@@ -11,7 +11,7 @@ class Profile : public QObject
 {
     Q_OBJECT
 public:
-    explicit Profile(const QString &name, QObject *parent = nullptr);
+    explicit Profile(const QString &name, double br, double cr, double cf, double t, QObject *parent = nullptr);
 
     QString getName() const;
     void setName(const QString &name);
@@ -30,6 +30,7 @@ private:
     double basalRate;
     double carbRatio;
     double correctionFactor;
+    double target;
 };
 
 #endif
