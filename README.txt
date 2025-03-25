@@ -1,7 +1,5 @@
 project-root/
-├── Makefile
 ├── main.cpp
-├── .gitignore
 ├── headers/
 │   ├── Battery.h
 │   ├── CGM.h
@@ -9,10 +7,17 @@ project-root/
 │   ├── Profile.h
 │   ├── Pump.h
 │   └── UI.h
-└── cpp/
-    ├── Battery.cpp
-    ├── CGM.cpp
-    ├── InsulinCartridge.cpp
-    ├── Profile.cpp
-    ├── Pump.cpp
-    └── UI.cpp
+├── cpp/
+│   ├── Battery.cpp
+│   ├── CGM.cpp
+│   ├── InsulinCartridge.cpp
+│   ├── Profile.cpp
+│   ├── Pump.cpp
+│   └── UI.cpp
+├── mainwindow.cpp
+├── mainwindow.h
+├── mainwindow.ui
+├── Models/
+│   ├── Comp3004_project_UseCaseModel.pdf
+│   └── umlclassdiagram.png
+├── COMP3004A4.pro
