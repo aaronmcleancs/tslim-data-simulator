@@ -15,6 +15,12 @@ SOURCES += \
 #    cpp/Profile.cpp \
 #    cpp/Pump.cpp \
 #    cpp/UI.cpp \
+    cpp/Battery.cpp \
+    cpp/CGM.cpp \
+    cpp/InsulinCartridge.cpp \
+    cpp/Profile.cpp \
+    cpp/Pump.cpp \
+    cpp/UI.cpp \
     main.cpp \
     mainwindow.cpp
 HEADERS += \
@@ -24,6 +30,12 @@ HEADERS += \
 #    headers/Profile.h \
 #    headers/Pump.h \
 #    headers/UI.h \
+    headers/Battery.h \
+    headers/CGM.h \
+    headers/InsulinCartridge.h \
+    headers/Profile.h \
+    headers/Pump.h \
+    headers/UI.h \
     mainwindow.h
 
 FORMS += \

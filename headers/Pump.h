@@ -17,13 +17,14 @@ class Pump : public QObject
     Q_OBJECT
 public:
     explicit Pump(QObject *parent = nullptr);
+    ~Pump();
 
     Battery* getBattery() const;
     InsulinCartridge* getInsulinCartridge() const;
     CGM* getCGM() const;
     UI* getUI() const;
 
-    void createProfile(QString n, double br, double cr, double cf, double t);
+    void createProfile(QString n, double br, double cr, double cf, double tmin, double tmax);
     void removeProfile(QString name);
     void updateProfile(QString name, QString setting, double val);
     int findIndex(QString name);
