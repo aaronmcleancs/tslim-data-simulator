@@ -3,15 +3,38 @@
 
 #include <QObject>
 #include <QString>
+#include <QSettings>
+#include <QStringList>
+#include <QJsonObject>
+#include <QJsonDocument>
+#include <QJsonArray>
+#include <QDateTime>
+#include <QPair>
+#include <QVector>
 
-// Example Header File for initial repo
-// Feel free to change any of this to your implementation
+
+struct GlucoseReading {
+    QDateTime timestamp;
+    double value; // mmol/L
+    
+    QJsonObject toJson() const;
+    static GlucoseReading fromJson(const QJsonObject &json);
+};
+
+struct InsulinDose {
+    QDateTime timestamp;
+    double amount; 
+    QString type;
+    
+    QJsonObject toJson() const;
+    static InsulinDose fromJson(const QJsonObject &json);
+};
 
 class Profile : public QObject
 {
     Q_OBJECT
 public:
-    explicit Profile(const QString &name, double br, double cr, double cf, double t, QObject *parent = nullptr);
+    explicit Profile(const QString &name, QObject *parent = nullptr);
 
     QString getName() const;
     void setName(const QString &name);
@@ -23,17 +46,13 @@ public:
     void setCarbRatio(double ratio) {carb_ratio = ratio;}
 
     double getCorrectionFactor() const;
-    void setCorrectionFactor(double factor) {correction_factor = factor;}
-
-    double getTarget() const;
-    void setTarget(double tar) {target = tar;}
+    void setCorrectionFactor(double factor);
 
 private:
     QString profileName;
     double basalRate;
     double carbRatio;
     double correctionFactor;
-    double target;
 };
 
 #endif
