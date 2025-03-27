@@ -16,6 +16,7 @@ SOURCES += \
 #    cpp/Pump.cpp \
 #    cpp/UI.cpp \
     cpp/Battery.cpp \
+    cpp/BolusCalculator.cpp \
     cpp/CGM.cpp \
     cpp/InsulinCartridge.cpp \
     cpp/Profile.cpp \
@@ -31,6 +32,7 @@ HEADERS += \
 #    headers/Pump.h \
 #    headers/UI.h \
     headers/Battery.h \
+    headers/BolusCalculator.h \
     headers/CGM.h \
     headers/InsulinCartridge.h \
     headers/Profile.h \

@@ -44,13 +44,15 @@ signals:
     void basalDeliveryStopped();
     void errorOccurred(const QString &error);
 
+protected :
+    Profile *activeProfile;
+
 private:
     Battery *battery;
     InsulinCartridge *insulinCartridge;
     CGM *cgm;
     UI *ui;
     QVector<Profile*> profiles;
-    Profile *activeProfile;
 };
 
 #endif
