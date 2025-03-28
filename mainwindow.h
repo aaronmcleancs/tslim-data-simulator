@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include "headers/BolusCalculator.h"
+#include "headers/Pump.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -26,7 +27,11 @@ private slots:
 
     void on_pushButton_clicked();
 
+    void on_createProfileButton_clicked();
+
 private:
     Ui::MainWindow *ui;
+    Pump* pump;
+
 };
 #endif // MAINWINDOW_H

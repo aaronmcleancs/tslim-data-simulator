@@ -1,4 +1,5 @@
 #include "headers/Pump.h"
+#include "mainwindow.h"
 #include <QDebug>
 
 Pump::Pump(QObject *parent){

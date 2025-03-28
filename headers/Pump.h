@@ -34,9 +34,9 @@ public:
     Profile* getActiveProfile() const;
 
 public slots:
-    void deliverBolus(double units);
-    void startBasalDelivery();
-    void stopBasalDelivery();
+    //void deliverBolus(double units);
+    //void startBasalDelivery();
+    //void stopBasalDelivery();
 
 signals:
     void bolusDelivered(double units);
