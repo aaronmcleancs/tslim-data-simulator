@@ -10,7 +10,7 @@ class CGM : public QObject
 {
     Q_OBJECT
 public:
-    explicit CGM(QObject *parent = nullptr);
+    //explicit CGM(QObject *parent = nullptr);
 
     int getCurrentGlucose();
     int getCurrentCarbs();

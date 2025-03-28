@@ -11,7 +11,8 @@ public:
 
     int Carb_Bolus_Calculation(int total_carbs);
     int Correction_Bolus_Calculation(int current_glucose);
-    int total_bolus(int total_carbs, int current_glucose);
+    void total_bolus(int total_carbs, int current_glucose);
+
 private:
     double bolus = 0.0;
 

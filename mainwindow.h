@@ -22,6 +22,10 @@ private slots:
 
     void on_calculate_clicked();
 
+    void on_radioButton_2_clicked();
+
+    void on_pushButton_clicked();
+
 private:
     Ui::MainWindow *ui;
 };
