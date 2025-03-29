@@ -10,14 +10,12 @@ Pump::Pump(QObject *parent)
 }
 
 Pump::~Pump(){
-    // Save profiles before deleting
     for (Profile* profile : profiles) {
         profile->saveProfile();
         delete profile;
     }
     profiles.clear();
     
-    // Clean up other components
     delete battery;
     delete insulinCartridge;
     delete cgm;
