@@ -6,8 +6,7 @@
 #include <QDateTime>
 #include <QLabel>
 #include "Profile.h"
-
-class Battery;
+#include "Battery.h"
 
 class CGM : public QObject
 {
