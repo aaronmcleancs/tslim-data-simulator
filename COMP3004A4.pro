@@ -16,6 +16,9 @@ SOURCES += \
     cpp/Profile.cpp \
     cpp/Pump.cpp \
     cpp/UI.cpp \
+    cpp/authmanager.cpp \
+    cpp/lockscreen.cpp \
+    cpp/statusmodel.cpp \
     main.cpp \
     mainwindow.cpp \
     statusbar.cpp
@@ -27,10 +30,14 @@ HEADERS += \
     headers/Profile.h \
     headers/Pump.h \
     headers/UI.h \
-    statusbar.h \
-    mainwindow.h
+    headers/authmanager.h \
+    headers/lockscreen.h \
+    headers/statusmodel.h \
+    mainwindow.h \
+    statusbar.h
 
 FORMS += \
+    lockscreen2.ui \
     mainwindow.ui \
     statusbar.ui
 
