@@ -15,8 +15,16 @@ SOURCES += \
 #    cpp/Profile.cpp \
 #    cpp/Pump.cpp \
 #    cpp/UI.cpp \
+    cpp/Battery.cpp \
+    cpp/BolusCalculator.cpp \
+    cpp/CGM.cpp \
+    cpp/InsulinCartridge.cpp \
+    cpp/Profile.cpp \
+    cpp/Pump.cpp \
+    cpp/UI.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    statusbar.cpp
 HEADERS += \
 #    headers/Battery.h \
 #    headers/CGM.h \
@@ -24,10 +32,19 @@ HEADERS += \
 #    headers/Profile.h \
 #    headers/Pump.h \
 #    headers/UI.h \
-    mainwindow.h
+    headers/Battery.h \
+    headers/BolusCalculator.h \
+    headers/CGM.h \
+    headers/InsulinCartridge.h \
+    headers/Profile.h \
+    headers/Pump.h \
+    headers/UI.h \
+    mainwindow.h \
+    statusbar.h
 
 FORMS += \
-    mainwindow.ui
+    mainwindow.ui \
+    statusbar.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

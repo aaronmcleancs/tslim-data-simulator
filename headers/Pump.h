@@ -17,23 +17,27 @@ class Pump : public QObject
     Q_OBJECT
 public:
     explicit Pump(QObject *parent = nullptr);
+    ~Pump();
 
     Battery* getBattery() const;
     InsulinCartridge* getInsulinCartridge() const;
     CGM* getCGM() const;
     UI* getUI() const;
 
-    void addProfile(Profile* profile);
-    void removeProfile(Profile* profile);
+    void createProfile(QString n, double br, double cr, double cf, double tmin, double tmax);
+    void removeProfile(QString name);
+    void updateProfile(QString name, QString setting, double val);
+    int findIndex(QString name);
     QVector<Profile*> getProfiles() const;
 
-    void selectActiveProfile(Profile* profile);
+    void selectActiveProfile(QString name);
     Profile* getActiveProfile() const;
+    QVector<Profile*>& getProfiles();
 
 public slots:
-    void deliverBolus(double units);
-    void startBasalDelivery();
-    void stopBasalDelivery();
+    //void deliverBolus(double units);
+    //void startBasalDelivery();
+    //void stopBasalDelivery();
 
 signals:
     void bolusDelivered(double units);
@@ -41,13 +45,15 @@ signals:
     void basalDeliveryStopped();
     void errorOccurred(const QString &error);
 
+protected :
+    Profile *activeProfile;
+
 private:
     Battery *battery;
     InsulinCartridge *insulinCartridge;
     CGM *cgm;
     UI *ui;
     QVector<Profile*> profiles;
-    Profile *activeProfile;
 };
 
 #endif

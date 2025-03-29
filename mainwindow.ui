@@ -28,7 +28,13 @@
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <widget class="QFrame" name="frame">
+     <widget class="QFrame" name="statusBarContainer">
+      <property name="minimumSize">
+       <size>
+        <width>782</width>
+        <height>40</height>
+       </size>
+      </property>
       <property name="maximumSize">
        <size>
         <width>16777215</width>
@@ -42,57 +48,18 @@
        <enum>QFrame::Raised</enum>
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout">
-       <item>
-        <widget class="QProgressBar" name="batteryStatus">
-         <property name="maximumSize">
-          <size>
-           <width>80</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="autoFillBackground">
-          <bool>false</bool>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">selection-background-color: rgb(46, 194, 126);</string>
-         </property>
-         <property name="value">
-          <number>24</number>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <spacer name="horizontalSpacer">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>587</width>
-           <height>17</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item>
-        <widget class="QProgressBar" name="insulinLevel">
-         <property name="maximumSize">
-          <size>
-           <width>80</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="maximum">
-          <number>300</number>
-         </property>
-         <property name="value">
-          <number>24</number>
-         </property>
-         <property name="format">
-          <string>%pU</string>
-         </property>
-        </widget>
-       </item>
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
       </layout>
      </widget>
     </item>
@@ -222,7 +189,7 @@
        </size>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>3</number>
       </property>
       <widget class="QWidget" name="tab">
        <property name="minimumSize">
@@ -234,6 +201,44 @@
        <attribute name="title">
         <string>History</string>
        </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <item>
+         <widget class="QTableWidget" name="historyTable">
+          <property name="alternatingRowColors">
+           <bool>true</bool>
+          </property>
+          <property name="selectionMode">
+           <enum>QAbstractItemView::SingleSelection</enum>
+          </property>
+          <property name="selectionBehavior">
+           <enum>QAbstractItemView::SelectRows</enum>
+          </property>
+          <property name="sortingEnabled">
+           <bool>true</bool>
+          </property>
+          <column>
+           <property name="text">
+            <string>Date/Time</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Type</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Value</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Details</string>
+           </property>
+          </column>
+         </widget>
+        </item>
+       </layout>
       </widget>
       <widget class="QWidget" name="tab_2">
        <attribute name="title">
@@ -244,6 +249,358 @@
        <attribute name="title">
         <string>Settings</string>
        </attribute>
+      </widget>
+      <widget class="QWidget" name="profile_tab">
+       <attribute name="title">
+        <string>Profiles</string>
+       </attribute>
+       <widget class="QGroupBox" name="active_profile_tab">
+        <property name="geometry">
+         <rect>
+          <x>-1</x>
+          <y>-1</y>
+          <width>191</width>
+          <height>191</height>
+         </rect>
+        </property>
+        <property name="title">
+         <string>Change Active Profile</string>
+        </property>
+        <widget class="QListWidget" name="profile_list">
+         <property name="geometry">
+          <rect>
+           <x>0</x>
+           <y>20</y>
+           <width>191</width>
+           <height>171</height>
+          </rect>
+         </property>
+        </widget>
+       </widget>
+       <widget class="QGroupBox" name="new_profile_tab">
+        <property name="geometry">
+         <rect>
+          <x>240</x>
+          <y>0</y>
+          <width>281</width>
+          <height>191</height>
+         </rect>
+        </property>
+        <property name="title">
+         <string>Create New Profile</string>
+        </property>
+        <widget class="QPlainTextEdit" name="new_profile_name_box">
+         <property name="geometry">
+          <rect>
+           <x>90</x>
+           <y>30</y>
+           <width>121</width>
+           <height>21</height>
+          </rect>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_8">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>30</y>
+           <width>62</width>
+           <height>17</height>
+          </rect>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>14</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Name</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_9">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>60</y>
+           <width>62</width>
+           <height>17</height>
+          </rect>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>14</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>BR</string>
+         </property>
+        </widget>
+        <widget class="QDoubleSpinBox" name="new_profile_br_box">
+         <property name="geometry">
+          <rect>
+           <x>90</x>
+           <y>60</y>
+           <width>121</width>
+           <height>26</height>
+          </rect>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_10">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>90</y>
+           <width>62</width>
+           <height>17</height>
+          </rect>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>14</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>CR</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_11">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>120</y>
+           <width>62</width>
+           <height>17</height>
+          </rect>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>14</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>CF</string>
+         </property>
+        </widget>
+        <widget class="QDoubleSpinBox" name="new_profile_cr_box">
+         <property name="geometry">
+          <rect>
+           <x>90</x>
+           <y>90</y>
+           <width>121</width>
+           <height>26</height>
+          </rect>
+         </property>
+        </widget>
+        <widget class="QDoubleSpinBox" name="new_profile_cf_box">
+         <property name="geometry">
+          <rect>
+           <x>90</x>
+           <y>120</y>
+           <width>121</width>
+           <height>26</height>
+          </rect>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_12">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>150</y>
+           <width>121</width>
+           <height>17</height>
+          </rect>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Target (Min, Max)</string>
+         </property>
+        </widget>
+        <widget class="QDoubleSpinBox" name="new_profile_min_box">
+         <property name="geometry">
+          <rect>
+           <x>130</x>
+           <y>150</y>
+           <width>65</width>
+           <height>26</height>
+          </rect>
+         </property>
+        </widget>
+        <widget class="QDoubleSpinBox" name="new_profile_max_box">
+         <property name="geometry">
+          <rect>
+           <x>210</x>
+           <y>150</y>
+           <width>65</width>
+           <height>26</height>
+          </rect>
+         </property>
+        </widget>
+       </widget>
+       <widget class="QGroupBox" name="edit_profile_tab">
+        <property name="geometry">
+         <rect>
+          <x>580</x>
+          <y>0</y>
+          <width>191</width>
+          <height>191</height>
+         </rect>
+        </property>
+        <property name="title">
+         <string>Edit Existing Profile</string>
+        </property>
+        <widget class="QPlainTextEdit" name="edit_profile_name_box">
+         <property name="geometry">
+          <rect>
+           <x>70</x>
+           <y>30</y>
+           <width>111</width>
+           <height>21</height>
+          </rect>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_13">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>30</y>
+           <width>62</width>
+           <height>17</height>
+          </rect>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>14</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Name</string>
+         </property>
+        </widget>
+        <widget class="QComboBox" name="edit_profile_setting_box">
+         <property name="geometry">
+          <rect>
+           <x>90</x>
+           <y>80</y>
+           <width>91</width>
+           <height>25</height>
+          </rect>
+         </property>
+         <item>
+          <property name="text">
+           <string>BR</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>CR</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>CF</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Target Min</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Target Max</string>
+          </property>
+         </item>
+        </widget>
+        <widget class="QLabel" name="label_14">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>80</y>
+           <width>81</width>
+           <height>21</height>
+          </rect>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>14</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Setting</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_15">
+         <property name="geometry">
+          <rect>
+           <x>40</x>
+           <y>120</y>
+           <width>111</width>
+           <height>17</height>
+          </rect>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>14</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>New Value</string>
+         </property>
+        </widget>
+        <widget class="QDoubleSpinBox" name="edit_val_box">
+         <property name="geometry">
+          <rect>
+           <x>30</x>
+           <y>150</y>
+           <width>131</width>
+           <height>26</height>
+          </rect>
+         </property>
+        </widget>
+       </widget>
+       <widget class="QPushButton" name="profile_select_button">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>200</y>
+          <width>171</width>
+          <height>41</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Select</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="profile_create_button">
+        <property name="geometry">
+         <rect>
+          <x>300</x>
+          <y>200</y>
+          <width>171</width>
+          <height>41</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Create</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="profile_edit_button">
+        <property name="geometry">
+         <rect>
+          <x>590</x>
+          <y>200</y>
+          <width>171</width>
+          <height>41</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Confirm</string>
+        </property>
+       </widget>
       </widget>
      </widget>
     </item>

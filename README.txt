@@ -2,6 +2,7 @@ project-root/
 ├── main.cpp
 ├── headers/
 │   ├── Battery.h
+|   |── BolusCalculator.h
 │   ├── CGM.h
 │   ├── InsulinCartridge.h
 │   ├── Profile.h
@@ -9,6 +10,7 @@ project-root/
 │   └── UI.h
 ├── cpp/
 │   ├── Battery.cpp
+|   |── BolusCalculator.cpp
 │   ├── CGM.cpp
 │   ├── InsulinCartridge.cpp
 │   ├── Profile.cpp

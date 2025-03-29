@@ -10,16 +10,18 @@ class CGM : public QObject
 {
     Q_OBJECT
 public:
-    explicit CGM(QObject *parent = nullptr);
+    //explicit CGM(QObject *parent = nullptr);
 
-    double getCurrentGlucose() const;
+    int getCurrentGlucose();
+    int getCurrentCarbs();
     void updateGlucoseLevel(double glucose);
 
 signals:
     void glucoseLevelUpdated(double glucose);
 
 private:
-    double currentGlucose;
+    double currentGlucose = 0;
+    double currentCarbs = 0;
 };
 
 #endif
