@@ -73,7 +73,7 @@ void MainWindow::on_radioButton_2_clicked()
 
     CGM c1;
     int carbs = c1.getCurrentCarbs();
-    int glucose = c1.getCurrentGlucose();
+    int glucose = c1.getCurrentGlucoseLevel();
 
     BolusCalculator b1;
     b1.total_bolus(carbs, glucose);

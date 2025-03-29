@@ -2,26 +2,39 @@
 #define CGM_H
 
 #include <QObject>
+#include <QTimer>
+#include <QDateTime>
+#include <QLabel>
+#include "Profile.h"
 
-// Example Header File for initial repo
-// Feel free to change any of this to your implementation
+class Battery;
 
 class CGM : public QObject
 {
     Q_OBJECT
 public:
-    //explicit CGM(QObject *parent = nullptr);
+    explicit CGM(QObject *parent = nullptr);
+    ~CGM();
 
-    int getCurrentGlucose();
-    int getCurrentCarbs();
-    void updateGlucoseLevel(double glucose);
+    void startMonitoring();
+    void stopMonitoring();
+    double getCurrentGlucoseLevel() const;
+    double getCurrentCarbs() const;
+    double estimateCarbs();
+    void setGlucoseLabel(QLabel *label);
 
-signals:
-    void glucoseLevelUpdated(double glucose);
+private slots:
+    void update();
 
 private:
-    double currentGlucose = 0;
-    double currentCarbs = 0;
+    double currentGlucoseLevel;
+    double currentCarbs;
+    QTimer *monitoringTimer;
+    Battery *battery;
+    Profile *profile;
+    QLabel *glucoseLabel;
+
+    void fetchLatestGlucoseReading();
 };
 
-#endif
+#endif // CGM_H
