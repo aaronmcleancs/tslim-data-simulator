@@ -32,6 +32,7 @@ public:
 
     void selectActiveProfile(QString name);
     Profile* getActiveProfile() const;
+    QVector<Profile*>& getProfiles();
 
 public slots:
     //void deliverBolus(double units);

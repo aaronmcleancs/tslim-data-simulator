@@ -5,18 +5,76 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QLineEdit>
+#include <QTableWidget>
+#include <QTableWidgetItem>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    ui->Bolus_Groupbox->setVisible(false);
-    ui->groupBox_2->setVisible(false);
+    statusBar = new StatusBar(this);
+    ui->statusBarContainer->layout()->addWidget(statusBar);
 
-    connect(ui->profile_create_button, SIGNAL(released()), this, SLOT (on_createProfileButton_clicked()));
+    QGroupBox *bolusGroupBox = findChild<QGroupBox*>("Bolus_Groupbox");
+    if (bolusGroupBox) {
+        bolusGroupBox->setVisible(false);
+    }
+    
+    QGroupBox *groupBox2 = findChild<QGroupBox*>("groupBox_2");
+    if (groupBox2) {
+        groupBox2->setVisible(false);
+    }
+
+    connect(ui->profile_create_button, &QPushButton::clicked, this, &MainWindow::createProfile);
+    connect(ui->tabWidget, &QTabWidget::currentChanged, this, &MainWindow::on_tabWidget_currentChanged);
+    
+    if (ui->profile_select_button) {
+        connect(ui->profile_select_button, &QPushButton::clicked, this, [this]() {
+            if (ui->profile_list->currentItem()) {
+                QString profileName = ui->profile_list->currentItem()->text();
+                pump->selectActiveProfile(profileName);
+                updateHistoryTab();
+            }
+        });
+    }
 
     pump = new Pump(nullptr);
+    
+    QStringList profileNames = Profile::getAvailableProfiles();
+    for (const QString &name : profileNames) {
+        Profile* prof = new Profile(name, nullptr);
+        pump->getProfiles().append(prof);
+        ui->profile_list->addItem(name);
+        
+        
+        if (pump->getProfiles().size() == 1) {
+            pump->selectActiveProfile(name);
+            
+            GlucoseReading reading1;
+            reading1.timestamp = QDateTime::currentDateTime().addSecs(-3600 * 2); 
+            reading1.value = 5.6;
+            prof->addGlucoseReading(reading1);
+            
+            GlucoseReading reading2;
+            reading2.timestamp = QDateTime::currentDateTime().addSecs(-3600); 
+            reading2.value = 7.2;
+            prof->addGlucoseReading(reading2);
+            
+            
+            InsulinDose dose1;
+            dose1.timestamp = QDateTime::currentDateTime().addSecs(-3600 * 1.5); 
+            dose1.amount = 4.2;
+            dose1.type = "Bolus";
+            prof->addInsulinDose(dose1);
+            
+            InsulinDose dose2;
+            dose2.timestamp = QDateTime::currentDateTime().addSecs(-1800); 
+            dose2.amount = 1.8;
+            dose2.type = "Correction";
+            prof->addInsulinDose(dose2);
+        }
+    }
 }
 
 MainWindow::~MainWindow()
@@ -24,7 +82,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::on_createProfileButton_clicked() {
+void MainWindow::createProfile() {
     QString name = ui->new_profile_name_box->toPlainText().trimmed();
     double br = ui->new_profile_br_box->value();
     double cf = ui->new_profile_cf_box->value();
@@ -34,5 +92,75 @@ void MainWindow::on_createProfileButton_clicked() {
 
     pump->createProfile(name, br, cr, cf, tmin, tmax);
     ui->profile_list->addItem(name);
+}
 
+void MainWindow::updateHistoryTab() {
+    ui->historyTable->clearContents();
+    ui->historyTable->setRowCount(0);
+    
+    Profile* activeProfile = pump->getActiveProfile();
+    if (!activeProfile) {
+        return;
+    }
+    
+    
+    QVector<GlucoseReading> glucoseReadings = activeProfile->getGlucoseReadings();
+    QVector<InsulinDose> insulinDoses = activeProfile->getInsulinDoses();
+    
+    
+    int totalRows = glucoseReadings.size() + insulinDoses.size();
+    ui->historyTable->setRowCount(totalRows);
+    
+    int currentRow = 0;
+    
+    
+    for (const GlucoseReading &reading : glucoseReadings) {
+        QTableWidgetItem *dateTimeItem = new QTableWidgetItem(reading.timestamp.toString("yyyy-MM-dd hh:mm"));
+        QTableWidgetItem *typeItem = new QTableWidgetItem("Glucose");
+        QTableWidgetItem *valueItem = new QTableWidgetItem(QString::number(reading.value) + " mmol/L");
+        QTableWidgetItem *detailsItem = new QTableWidgetItem();
+        
+        
+        dateTimeItem->setFlags(dateTimeItem->flags() & ~Qt::ItemIsEditable);
+        typeItem->setFlags(typeItem->flags() & ~Qt::ItemIsEditable);
+        valueItem->setFlags(valueItem->flags() & ~Qt::ItemIsEditable);
+        detailsItem->setFlags(detailsItem->flags() & ~Qt::ItemIsEditable);
+        
+        ui->historyTable->setItem(currentRow, 0, dateTimeItem);
+        ui->historyTable->setItem(currentRow, 1, typeItem);
+        ui->historyTable->setItem(currentRow, 2, valueItem);
+        ui->historyTable->setItem(currentRow, 3, detailsItem);
+        
+        currentRow++;
+    }
+    
+    
+    for (const InsulinDose &dose : insulinDoses) {
+        QTableWidgetItem *dateTimeItem = new QTableWidgetItem(dose.timestamp.toString("yyyy-MM-dd hh:mm"));
+        QTableWidgetItem *typeItem = new QTableWidgetItem("Insulin");
+        QTableWidgetItem *valueItem = new QTableWidgetItem(QString::number(dose.amount) + " U");
+        QTableWidgetItem *detailsItem = new QTableWidgetItem(dose.type);
+        
+        
+        dateTimeItem->setFlags(dateTimeItem->flags() & ~Qt::ItemIsEditable);
+        typeItem->setFlags(typeItem->flags() & ~Qt::ItemIsEditable);
+        valueItem->setFlags(valueItem->flags() & ~Qt::ItemIsEditable);
+        detailsItem->setFlags(detailsItem->flags() & ~Qt::ItemIsEditable);
+        
+        ui->historyTable->setItem(currentRow, 0, dateTimeItem);
+        ui->historyTable->setItem(currentRow, 1, typeItem);
+        ui->historyTable->setItem(currentRow, 2, valueItem);
+        ui->historyTable->setItem(currentRow, 3, detailsItem);
+        
+        currentRow++;
+    }
+    
+    ui->historyTable->resizeColumnsToContents();
+}
+
+void MainWindow::on_tabWidget_currentChanged(int index) {
+    
+    if (index == 0) {
+        updateHistoryTab();
+    }
 }

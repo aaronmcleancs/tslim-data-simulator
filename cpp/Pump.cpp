@@ -2,25 +2,42 @@
 #include "mainwindow.h"
 #include <QDebug>
 
-Pump::Pump(QObject *parent){
-
+Pump::Pump(QObject *parent)
+    : QObject(parent), activeProfile(nullptr), battery(nullptr), 
+      insulinCartridge(nullptr), cgm(nullptr), ui(nullptr)
+{
+    // Initialize other components as needed
 }
 
 Pump::~Pump(){
-
+    for (Profile* profile : profiles) {
+        profile->saveProfile();
+        delete profile;
+    }
+    profiles.clear();
+    
+    delete battery;
+    delete insulinCartridge;
+    delete cgm;
+    delete ui;
 }
 
 void Pump::createProfile(QString n, double br, double cr, double cf, double tmin, double tmax){
-    Profile* new_profile = new Profile(n, nullptr);
-    new_profile->setBasalRate(br);
-    new_profile->setCarbRatio(cr);
-    new_profile->setTargetGlucoseRange(tmin, tmax);
-    profiles.append(new_profile);
+    if (Profile::createProfile(n)) {
+        Profile* new_profile = new Profile(n, nullptr);
+        new_profile->setBasalRate(br);
+        new_profile->setCarbRatio(cr);
+        new_profile->setCorrectionFactor(cf);
+        new_profile->setTargetGlucoseRange(tmin, tmax);
+        new_profile->saveProfile();
+        profiles.append(new_profile);
+    }
 }
 
 void Pump::removeProfile(QString name) {
     for (int i = 0; i < profiles.size(); i++) {
         if (profiles[i]->getName() == name) {
+            Profile::deleteProfile(name);
             delete profiles[i];
             profiles.remove(i);
             return;
@@ -47,6 +64,8 @@ void Pump::updateProfile(QString name, QString setting, double val){
         double min = profiles[index]->getTargetGlucoseRange().first;
         profiles[index]->setTargetGlucoseRange(min, val);
     }
+    
+    profiles[index]->saveProfile();
 }
 
 int Pump::findIndex(QString name){
@@ -65,4 +84,12 @@ void Pump::selectActiveProfile(QString name){
         return;
     }
     activeProfile = profiles[index];
+}
+
+QVector<Profile*>& Pump::getProfiles() {
+    return profiles;
+}
+
+Profile* Pump::getActiveProfile() const {
+    return activeProfile;
 }

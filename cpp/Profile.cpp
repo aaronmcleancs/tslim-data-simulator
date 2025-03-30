@@ -42,13 +42,13 @@ InsulinDose InsulinDose::fromJson(const QJsonObject &json) {
     return dose;
 }
 
-Profile::Profile(const QString &name, QObject *parent) : QObject(parent), 
+Profile::Profile(const QString &name, QObject *parent) : QObject(parent),
     profileName(name),
     basalRate(0.0),
     carbRatio(0.0),
     correctionFactor(0.0),
-    targetGlucoseMin(3.9), 
-    targetGlucoseMax(10.0) 
+    targetGlucoseMin(3.9),
+    targetGlucoseMax(10.0)
 {
     if (!name.isEmpty()) {
         loadProfile(name);
@@ -111,12 +111,12 @@ QVector<GlucoseReading> Profile::getGlucoseReadings(const QDateTime &start, cons
     if (!start.isValid() && !end.isValid()) {
         return glucoseReadings;
     }
-    
+
     QVector<GlucoseReading> filteredReadings;
-    
+
     for (const GlucoseReading &reading : glucoseReadings) {
         bool include = true;
-        
+
         if (start.isValid() && reading.timestamp < start) {
             include = false;
         }
@@ -127,7 +127,7 @@ QVector<GlucoseReading> Profile::getGlucoseReadings(const QDateTime &start, cons
             filteredReadings.append(reading);
         }
     }
-    
+
     return filteredReadings;
 }
 
@@ -140,16 +140,16 @@ QVector<InsulinDose> Profile::getInsulinDoses(const QDateTime &start, const QDat
     if (!start.isValid() && !end.isValid()) {
         return insulinDoses;
     }
-    
+
     QVector<InsulinDose> filteredDoses;
-    
+
     for (const InsulinDose &dose : insulinDoses) {
         bool include = true;
-        
+
         if (start.isValid() && dose.timestamp < start) {
             include = false;
         }
-        
+
         if (end.isValid() && dose.timestamp > end) {
             include = false;
         }
@@ -157,7 +157,7 @@ QVector<InsulinDose> Profile::getInsulinDoses(const QDateTime &start, const QDat
             filteredDoses.append(dose);
         }
     }
-    
+
     return filteredDoses;
 }
 
@@ -197,11 +197,11 @@ bool Profile::saveProfile() {
     if (profileName.isEmpty()) {
         return false;
     }
-    
+
     QSettings settings("TandemPump", "COMP3004A4");
-    
+
     QStringList profiles = settings.value(PROFILES_KEY).toStringList();
-    
+
     if (!profiles.contains(profileName)) {
         profiles.append(profileName);
         settings.setValue(PROFILES_KEY, profiles);
@@ -209,10 +209,10 @@ bool Profile::saveProfile() {
     QJsonObject profileJson = toJson();
     QJsonDocument doc(profileJson);
     QString jsonString = doc.toJson(QJsonDocument::Compact);
-    
+
     settings.setValue("Profile_" + profileName, jsonString);
     settings.sync();
-    
+
     return settings.status() == QSettings::NoError;
 }
 
@@ -220,24 +220,24 @@ bool Profile::loadProfile(const QString &name) {
     if (name.isEmpty()) {
         return false;
     }
-    
+
     QSettings settings("TandemPump", "COMP3004A4");
-    
+
     QStringList profiles = settings.value(PROFILES_KEY).toStringList();
     if (!profiles.contains(name)) {
         return false;
     }
-    
+
     QString jsonString = settings.value("Profile_" + name).toString();
     if (jsonString.isEmpty()) {
         return false;
     }
-    
+
     QJsonDocument doc = QJsonDocument::fromJson(jsonString.toUtf8());
     if (doc.isNull() || !doc.isObject()) {
         return false;
     }
-    
+
     fromJson(doc.object());
     return true;
 }
@@ -246,25 +246,25 @@ bool Profile::saveHistoricalData() {
     if (profileName.isEmpty()) {
         return false;
     }
-    
+
     QSettings settings("TandemPump", "COMP3004A4");
-    
+
     QJsonArray glucoseArray;
     for (const GlucoseReading &reading : glucoseReadings) {
         glucoseArray.append(reading.toJson());
     }
-    
+
     QJsonDocument glucoseDoc(glucoseArray);
     settings.setValue("GlucoseReadings_" + profileName, glucoseDoc.toJson(QJsonDocument::Compact));
-    
+
     QJsonArray insulinArray;
     for (const InsulinDose &dose : insulinDoses) {
         insulinArray.append(dose.toJson());
     }
-    
+
     QJsonDocument insulinDoc(insulinArray);
     settings.setValue("InsulinDoses_" + profileName, insulinDoc.toJson(QJsonDocument::Compact));
-    
+
     settings.sync();
     return settings.status() == QSettings::NoError;
 }
@@ -273,16 +273,16 @@ bool Profile::loadHistoricalData() {
     if (profileName.isEmpty()) {
         return false;
     }
-    
+
     QSettings settings("TandemPump", "COMP3004A4");
-    
+
     QString glucoseString = settings.value("GlucoseReadings_" + profileName).toString();
     if (!glucoseString.isEmpty()) {
         QJsonDocument glucoseDoc = QJsonDocument::fromJson(glucoseString.toUtf8());
         if (!glucoseDoc.isNull() && glucoseDoc.isArray()) {
             QJsonArray glucoseArray = glucoseDoc.array();
             glucoseReadings.clear();
-            
+
             for (const QJsonValue &value : glucoseArray) {
                 if (value.isObject()) {
                     glucoseReadings.append(GlucoseReading::fromJson(value.toObject()));
@@ -290,14 +290,14 @@ bool Profile::loadHistoricalData() {
             }
         }
     }
-    
+
     QString insulinString = settings.value("InsulinDoses_" + profileName).toString();
     if (!insulinString.isEmpty()) {
         QJsonDocument insulinDoc = QJsonDocument::fromJson(insulinString.toUtf8());
         if (!insulinDoc.isNull() && insulinDoc.isArray()) {
             QJsonArray insulinArray = insulinDoc.array();
             insulinDoses.clear();
-            
+
             for (const QJsonValue &value : insulinArray) {
                 if (value.isObject()) {
                     insulinDoses.append(InsulinDose::fromJson(value.toObject()));
@@ -305,7 +305,7 @@ bool Profile::loadHistoricalData() {
             }
         }
     }
-    
+
     return true;
 }
 
@@ -318,23 +318,23 @@ bool Profile::deleteProfile(const QString &name) {
     if (name.isEmpty()) {
         return false;
     }
-    
+
     QSettings settings("TandemPump", "COMP3004A4");
-    
+
     QStringList profiles = settings.value(PROFILES_KEY).toStringList();
     if (!profiles.contains(name)) {
         return false;
     }
-    
+
     profiles.removeAll(name);
     settings.setValue(PROFILES_KEY, profiles);
-    
+
     settings.remove("Profile_" + name);
 
     settings.remove("GlucoseReadings_" + name);
     settings.remove("InsulinDoses_" + name);
     settings.sync();
-    
+
     return settings.status() == QSettings::NoError;
 }
 
@@ -342,17 +342,17 @@ bool Profile::createProfile(const QString &name) {
     if (name.isEmpty()) {
         return false;
     }
-    
+
     QSettings settings("TandemPump", "COMP3004A4");
-    
+
     QStringList profiles = settings.value(PROFILES_KEY).toStringList();
     if (profiles.contains(name)) {
         return false;
     }
-    
+
     profiles.append(name);
     settings.setValue(PROFILES_KEY, profiles);
-    
+
     Profile newProfile(name);
     return newProfile.saveProfile();
 }
