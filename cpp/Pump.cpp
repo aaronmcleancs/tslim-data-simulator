@@ -3,10 +3,10 @@
 #include <QDebug>
 
 Pump::Pump(QObject *parent)
-    : QObject(parent), activeProfile(nullptr), battery(nullptr), 
+    : QObject(parent), activeProfile(nullptr), battery(nullptr),
       insulinCartridge(nullptr), cgm(nullptr), ui(nullptr)
 {
-    // Initialize other components as needed
+    //any more constructor code here
 }
 
 Pump::~Pump(){
@@ -31,17 +31,31 @@ void Pump::createProfile(QString n, double br, double cr, double cf, double tmin
         new_profile->setTargetGlucoseRange(tmin, tmax);
         new_profile->saveProfile();
         profiles.append(new_profile);
+        qDebug() << "Created profile:" << n;
     }
 }
 
 void Pump::removeProfile(QString name) {
-    for (int i = 0; i < profiles.size(); i++) {
+    // First ensure we don't have duplicates
+    bool found = false;
+    for (int i = profiles.size() - 1; i >= 0; i--) {
         if (profiles[i]->getName() == name) {
-            Profile::deleteProfile(name);
+            if (activeProfile == profiles[i]) {
+                activeProfile = nullptr;
+            }
             delete profiles[i];
             profiles.remove(i);
-            return;
+            found = true;
         }
+    }
+
+    // Then remove from persistent storage
+    if (found) {
+        if (!Profile::deleteProfile(name)) {
+            qWarning() << "Failed to delete profile from storage:" << name;
+        }
+    } else {
+        qWarning() << "Profile not found for removal:" << name;
     }
 }
 
@@ -64,7 +78,7 @@ void Pump::updateProfile(QString name, QString setting, double val){
         double min = profiles[index]->getTargetGlucoseRange().first;
         profiles[index]->setTargetGlucoseRange(min, val);
     }
-    
+    qDebug() << "changed" << setting << "for profile" << name << "to" << val;
     profiles[index]->saveProfile();
 }
 
@@ -84,6 +98,7 @@ void Pump::selectActiveProfile(QString name){
         return;
     }
     activeProfile = profiles[index];
+    qDebug() << "Active profile is now " << name;
 }
 
 QVector<Profile*>& Pump::getProfiles() {

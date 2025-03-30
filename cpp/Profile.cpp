@@ -50,10 +50,12 @@ Profile::Profile(const QString &name, QObject *parent) : QObject(parent),
     targetGlucoseMin(3.9),
     targetGlucoseMax(10.0)
 {
+
     if (!name.isEmpty()) {
         loadProfile(name);
         loadHistoricalData();
     }
+
 }
 
 Profile::~Profile() {

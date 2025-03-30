@@ -27,6 +27,8 @@ MainWindow::MainWindow(QWidget *parent)
     }
 
     connect(ui->profile_create_button, &QPushButton::clicked, this, &MainWindow::createProfile);
+    connect(ui->profile_edit_button, &QPushButton::clicked, this, &MainWindow::editProfile);
+    connect(ui->profile_delete_button, &QPushButton::clicked, this, &MainWindow::deleteProfile);
     connect(ui->tabWidget, &QTabWidget::currentChanged, this, &MainWindow::on_tabWidget_currentChanged);
     
     if (ui->profile_select_button) {
@@ -84,14 +86,45 @@ MainWindow::~MainWindow()
 
 void MainWindow::createProfile() {
     QString name = ui->new_profile_name_box->toPlainText().trimmed();
+    if (name.isEmpty()) {
+        qDebug() << "name cannot be empty";
+        return;
+    }
     double br = ui->new_profile_br_box->value();
     double cf = ui->new_profile_cf_box->value();
     double cr = ui->new_profile_cr_box->value();
     double tmax = ui->new_profile_min_box->value();
     double tmin = ui->new_profile_min_box->value();
 
+    // Check for existing profile first
+    if (pump->findIndex(name) != -1) {
+        qDebug() << "Profile already exists";
+        return;
+    }
+
     pump->createProfile(name, br, cr, cf, tmin, tmax);
     ui->profile_list->addItem(name);
+    ui->new_profile_name_box->clear();
+}
+
+void MainWindow::deleteProfile(){
+    QListWidgetItem *selected = ui->profile_list->currentItem();
+    if (selected) {
+        QString name = selected->text();
+        pump->removeProfile(name);
+        delete ui->profile_list->takeItem(ui->profile_list->row(selected));
+    }}
+
+void MainWindow::editProfile(){
+    QString name = ui->edit_profile_name_box->toPlainText().trimmed();
+    QString setting = ui->edit_profile_setting_box->currentText();
+    double value = ui->edit_val_box->value();
+    pump->updateProfile(name, setting, value);
+}
+
+void MainWindow::selectProfile(){
+    QString name = ui->profile_list->currentItem()->text();
+    pump->selectActiveProfile(name);
 }
 
 void MainWindow::updateHistoryTab() {

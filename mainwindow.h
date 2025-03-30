@@ -29,6 +29,9 @@ private slots:
     void on_pushButton_clicked();
 
     void createProfile();
+    void editProfile();
+    void selectProfile();
+    void deleteProfile();
     
     void updateHistoryTab();
     void on_tabWidget_currentChanged(int index);
