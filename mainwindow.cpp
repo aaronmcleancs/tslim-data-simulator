@@ -17,8 +17,8 @@ MainWindow::MainWindow(StatusBar *sb, QWidget *parent)
     statusBar = sb;
     ui->statusBarContainer->layout()->addWidget(statusBar);
 
-    ui->Bolus_Groupbox->setVisible(false);
-    ui->groupBox_2->setVisible(false);
+//    ui->Bolus_Groupbox->setVisible(false);
+//    ui->groupBox_2->setVisible(false);
 
     QGroupBox *bolusGroupBox = findChild<QGroupBox*>("Bolus_Groupbox");
     if (bolusGroupBox) {
