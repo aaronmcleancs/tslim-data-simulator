@@ -8,13 +8,17 @@
 #include <QTableWidget>
 #include <QTableWidgetItem>
 
-MainWindow::MainWindow(QWidget *parent)
+MainWindow::MainWindow(StatusBar *sb, QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    statusBar = new StatusBar(this);
+
+    statusBar = sb;
     ui->statusBarContainer->layout()->addWidget(statusBar);
+
+//    ui->Bolus_Groupbox->setVisible(false);
+//    ui->groupBox_2->setVisible(false);
 
     QGroupBox *bolusGroupBox = findChild<QGroupBox*>("Bolus_Groupbox");
     if (bolusGroupBox) {
@@ -77,7 +81,22 @@ MainWindow::MainWindow(QWidget *parent)
             prof->addInsulinDose(dose2);
         }
     }
+    connect(ui->profile_create_button, SIGNAL(released()), this, SLOT(on_createProfileButton_clicked()));
+
+    pump = new Pump(nullptr);
+
+    AuthManager* authManager = AuthManager::getInstance();
+    connect(authManager, &AuthManager::authStateChanged,
+            this, &MainWindow::onAuthStateChanged);
 }
+
+void MainWindow::onAuthStateChanged(bool authenticated)
+{
+    if (!authenticated) {
+        close();
+    }
+}
+
 
 MainWindow::~MainWindow()
 {

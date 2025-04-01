@@ -1,3 +1,5 @@
+#include "headers/statusmodel.h"
+
 #ifndef STATUSBAR_H
 #define STATUSBAR_H
 
@@ -14,9 +16,15 @@ class StatusBar : public QFrame
 public:
     explicit StatusBar(QWidget *parent = nullptr);
     ~StatusBar();
+    static StatusBar* getInstance();
 
 private:
     Ui::StatusBar *ui;
+    static StatusBar* instance;
+
+private slots:
+    void onBatteryLevelChanged(int level);
+    void onUnitsChanged(int level);
 };
 
-#endif // STATUSBAR_H
+#endif

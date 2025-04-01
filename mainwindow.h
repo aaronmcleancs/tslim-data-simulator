@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include "headers/BolusCalculator.h"
 #include "headers/Pump.h"
+#include "headers/authmanager.h"
 #include "statusbar.h"
 
 QT_BEGIN_NAMESPACE
@@ -15,10 +16,11 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = nullptr);
+    MainWindow(StatusBar *sb, QWidget *parent = nullptr);
     ~MainWindow();
 
 private slots:
+    void onAuthStateChanged(bool authenticated);
     void on_bolusButton_clicked();
     void on_radioButton_clicked();
 
