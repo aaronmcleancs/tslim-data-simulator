@@ -34,6 +34,8 @@ public:
     Profile* getActiveProfile() const;
     QVector<Profile*>& getProfiles();
 
+    void updateSettings();
+
 public slots:
     //void deliverBolus(double units);
     //void startBasalDelivery();

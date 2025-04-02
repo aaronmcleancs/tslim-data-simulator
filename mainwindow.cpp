@@ -83,7 +83,6 @@ MainWindow::MainWindow(StatusBar *sb, QWidget *parent)
     }
     connect(ui->profile_create_button, SIGNAL(released()), this, SLOT(on_createProfileButton_clicked()));
 
-    pump = new Pump(nullptr);
 
     AuthManager* authManager = AuthManager::getInstance();
     connect(authManager, &AuthManager::authStateChanged,
@@ -132,7 +131,8 @@ void MainWindow::deleteProfile(){
         QString name = selected->text();
         pump->removeProfile(name);
         delete ui->profile_list->takeItem(ui->profile_list->row(selected));
-    }}
+    }
+}
 
 void MainWindow::editProfile(){
     QString name = ui->edit_profile_name_box->toPlainText().trimmed();
@@ -142,8 +142,14 @@ void MainWindow::editProfile(){
 }
 
 void MainWindow::selectProfile(){
-    QString name = ui->profile_list->currentItem()->text();
+    QString name = ui->profile_list->currentItem()->text().trimmed();
+    qDebug() << "selected profile name:" << name;
     pump->selectActiveProfile(name);
+    Profile* activeProfile = pump->getActiveProfile();
+    ui->setting_name_label->setText(QString("Name:") + name);
+    ui->setting_br_label->setText(QString("Basal Rate:") + QString::number(activeProfile->getBasalRate()));
+    ui->setting_cr_label->setText(QString("Carb Ratio:") + QString::number(activeProfile->getCarbRatio()));
+    ui->setting_cf_label->setText(QString("Correction Factor:") + QString::number(activeProfile->getCorrectionFactor()));
 }
 
 void MainWindow::updateHistoryTab() {

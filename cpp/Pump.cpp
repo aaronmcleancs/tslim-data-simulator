@@ -43,8 +43,9 @@ void Pump::removeProfile(QString name) {
             if (activeProfile == profiles[i]) {
                 activeProfile = nullptr;
             }
-            delete profiles[i];
+            Profile* remove = profiles[i];
             profiles.remove(i);
+            delete remove;
             found = true;
         }
     }
@@ -80,10 +81,13 @@ void Pump::updateProfile(QString name, QString setting, double val){
     }
     qDebug() << "changed" << setting << "for profile" << name << "to" << val;
     profiles[index]->saveProfile();
+
+    updateSettings();
 }
 
 int Pump::findIndex(QString name){
     for(int i = 0; i < profiles.size(); i++){
+        qDebug() << "profile" << i << "name:" << profiles[i]->getName();
         if(profiles[i]->getName() == name){
             return i;
         }
@@ -107,4 +111,8 @@ QVector<Profile*>& Pump::getProfiles() {
 
 Profile* Pump::getActiveProfile() const {
     return activeProfile;
+}
+
+void Pump::updateSettings(){
+
 }

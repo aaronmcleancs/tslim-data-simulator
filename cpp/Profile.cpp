@@ -342,6 +342,7 @@ bool Profile::deleteProfile(const QString &name) {
 
 bool Profile::createProfile(const QString &name) {
     if (name.isEmpty()) {
+        qDebug() << "empty name, creation failed";
         return false;
     }
 
@@ -349,6 +350,7 @@ bool Profile::createProfile(const QString &name) {
 
     QStringList profiles = settings.value(PROFILES_KEY).toStringList();
     if (profiles.contains(name)) {
+        qDebug() << "existing name";
         return false;
     }
 

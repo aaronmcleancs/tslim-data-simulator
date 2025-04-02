@@ -42,11 +42,45 @@ void LockScreen::on_confirmButton_clicked()
     }
 }
 
-bool LockScreen::validatePIN(const QString &pin)
-{
-    // hardcoded will change once settings is established
-    return pin == "1234";
+bool LockScreen::validatePIN(const QString &pin) {
+    QString savedPassword = loadPasswordFromJson();
+
+    // If no password is set yet use default
+    if (savedPassword.isEmpty()) {
+        savePasswordToJson("1234"); // Set default password
+        return pin == "1234";
+    }
+
+    return pin == savedPassword;
 }
+
+void LockScreen::savePasswordToJson(const QString &password) {
+    QJsonObject json;
+    json["password"] = password;
+
+    QFile file("password.json");
+    if (file.open(QIODevice::WriteOnly)) {
+        file.write(QJsonDocument(json).toJson());
+        file.close();
+    }
+}
+
+QString LockScreen::loadPasswordFromJson() {
+    QFile file("password.json");
+    if (!file.open(QIODevice::ReadOnly)) {
+        return ""; // File doesn't exist yet
+    }
+
+    QByteArray data = file.readAll();
+    QJsonDocument doc = QJsonDocument::fromJson(data);
+    if (doc.isNull() || !doc.isObject()) {
+        return "";
+    }
+
+    QJsonObject json = doc.object();
+    return json["password"].toString();
+}
+
 
 void LockScreen::onNumericButtonClicked()
 {
@@ -65,5 +99,6 @@ void LockScreen::onNumericButtonClicked()
 void LockScreen::on_clearButton_clicked()
 {
     ui->pinEdit->clear();
+    savePasswordToJson("1111");
 }
 

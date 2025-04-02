@@ -2,6 +2,10 @@
 #define LOCKSCREEN_H
 
 #include <QWidget>
+#include <QSettings>
+#include <QFile>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include "statusbar.h"
 #include "authmanager.h"
 
@@ -34,6 +38,9 @@ private:
     // PIN validation
     bool validatePIN(const QString &pin);
     void onNumericButtonClicked();
+
+    void savePasswordToJson(const QString &password);
+    QString loadPasswordFromJson();
 };
 
 #endif // LOCKSCREEN_H
