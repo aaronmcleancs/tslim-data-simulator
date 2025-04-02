@@ -5,6 +5,7 @@
 #include "headers/BolusCalculator.h"
 #include "headers/Pump.h"
 #include "headers/authmanager.h"
+#include "headers/QCustomPlot.h"
 #include "statusbar.h"
 
 QT_BEGIN_NAMESPACE
@@ -18,6 +19,8 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(StatusBar *sb, QWidget *parent = nullptr);
     ~MainWindow();
+
+    void setupBloodSugarGraph();
 
 private slots:
     void onAuthStateChanged(bool authenticated);

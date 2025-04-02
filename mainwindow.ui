@@ -189,7 +189,7 @@
        </size>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab">
        <property name="minimumSize">
@@ -240,6 +240,21 @@
         </item>
        </layout>
       </widget>
+      <widget class="QWidget" name="tab_4">
+       <attribute name="title">
+        <string>Graph</string>
+       </attribute>
+       <widget class="QCustomPlot" name="graph" native="true">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>781</width>
+          <height>261</height>
+         </rect>
+        </property>
+       </widget>
+      </widget>
       <widget class="QWidget" name="tab_2">
        <attribute name="title">
         <string>Alerts</string>
@@ -254,7 +269,7 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>251</width>
+          <width>321</width>
           <height>261</height>
          </rect>
         </property>
@@ -266,7 +281,7 @@
           <rect>
            <x>10</x>
            <y>30</y>
-           <width>231</width>
+           <width>301</width>
            <height>51</height>
           </rect>
          </property>
@@ -284,7 +299,7 @@
           <rect>
            <x>10</x>
            <y>90</y>
-           <width>241</width>
+           <width>301</width>
            <height>51</height>
           </rect>
          </property>
@@ -302,7 +317,7 @@
           <rect>
            <x>10</x>
            <y>140</y>
-           <width>241</width>
+           <width>301</width>
            <height>61</height>
           </rect>
          </property>
@@ -320,7 +335,7 @@
           <rect>
            <x>10</x>
            <y>200</y>
-           <width>241</width>
+           <width>301</width>
            <height>51</height>
           </rect>
          </property>
@@ -337,9 +352,9 @@
        <widget class="QGroupBox" name="groupBox_3">
         <property name="geometry">
          <rect>
-          <x>259</x>
+          <x>329</x>
           <y>-1</y>
-          <width>511</width>
+          <width>441</width>
           <height>261</height>
          </rect>
         </property>
@@ -826,6 +841,14 @@
    </layout>
   </widget>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QCustomPlot</class>
+   <extends>QWidget</extends>
+   <header>QCustomPlot.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

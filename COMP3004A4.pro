@@ -1,4 +1,4 @@
-QT       += core gui
+QT += core gui widgets printsupport  # Add printsupport module
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -20,6 +20,7 @@ SOURCES += \
     cpp/authmanager.cpp \
     cpp/lockscreen.cpp \
     cpp/statusmodel.cpp \
+    cpp/QCustomPlot.cpp \
     main.cpp \
     mainwindow.cpp \
     statusbar.cpp
@@ -35,6 +36,7 @@ HEADERS += \
     headers/authmanager.h \
     headers/lockscreen.h \
     headers/statusmodel.h \
+    headers/QCustomPlot.h \
     mainwindow.h \
     statusbar.h
 

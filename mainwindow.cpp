@@ -99,6 +99,8 @@ MainWindow::MainWindow(StatusBar *sb, QWidget *parent)
     AuthManager* authManager = AuthManager::getInstance();
     connect(authManager, &AuthManager::authStateChanged,
             this, &MainWindow::onAuthStateChanged);
+
+    setupBloodSugarGraph();
 }
 
 void MainWindow::onAuthStateChanged(bool authenticated)
@@ -418,4 +420,50 @@ void MainWindow::on_tabWidget_currentChanged(int index) {
     } else if (index == 2) {  
         updateSettingsTab();
     }
+}
+
+void MainWindow::setupBloodSugarGraph() {
+    QCustomPlot *plot = ui->graph;
+
+    // Remove default axis labels and numbers
+    plot->xAxis->setTickLabels(false); // Hide x-axis numbers
+    plot->xAxis->setLabel(""); // Remove x-axis label
+    plot->yAxis->setLabel("Blood Sugar (mmol/L)"); // Changed unit to mmol/L for 0-20 range
+
+    // Configure y-axis for mmol/L range (0-20)
+    plot->yAxis->setRange(0, 20);
+    plot->yAxis->grid()->setPen(QPen(QColor(200,200,200), 1, Qt::DotLine));
+
+    // Configure x-axis for 20 discrete readings
+    QSharedPointer<QCPAxisTickerFixed> fixedTicker(new QCPAxisTickerFixed);
+    fixedTicker->setTickCount(20); // Exactly 20 vertical grid lines
+    fixedTicker->setTickStep(1); // One unit per reading
+    fixedTicker->setScaleStrategy(QCPAxisTickerFixed::ssMultiples);
+    plot->xAxis->setTicker(fixedTicker);
+    plot->xAxis->setRange(0, 20); // 20 readings
+
+    // Style the graph
+    plot->addGraph();
+    plot->graph(0)->setName("Blood Glucose");
+    plot->graph(0)->setPen(QPen(QColor(0, 120, 215), 2)); // Modern blue
+
+    // Add colored zones for blood sugar ranges
+    QCPItemRect *lowRange = new QCPItemRect(plot);
+    lowRange->setPen(Qt::NoPen);
+    lowRange->setBrush(QColor(255, 100, 100, 30)); // Red tint for low
+    lowRange->topLeft->setTypeY(QCPItemPosition::ptPlotCoords);
+    lowRange->topLeft->setCoords(0, 4);
+    lowRange->bottomRight->setTypeY(QCPItemPosition::ptPlotCoords);
+    lowRange->bottomRight->setCoords(20, 0);
+
+    QCPItemRect *targetRange = new QCPItemRect(plot);
+    targetRange->setPen(Qt::NoPen);
+    targetRange->setBrush(QColor(100, 255, 100, 30)); // Green tint for target
+    targetRange->topLeft->setTypeY(QCPItemPosition::ptPlotCoords);
+    targetRange->topLeft->setCoords(0, 10);
+    targetRange->bottomRight->setTypeY(QCPItemPosition::ptPlotCoords);
+    targetRange->bottomRight->setCoords(20, 4);
+
+    plot->setBackground(Qt::white);
+    plot->replot();
 }
