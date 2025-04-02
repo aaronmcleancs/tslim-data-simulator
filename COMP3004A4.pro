@@ -14,6 +14,7 @@ SOURCES += \
     cpp/CGM.cpp \
     cpp/InsulinCartridge.cpp \
     cpp/Profile.cpp \
+    cpp/PumpHistory.cpp \
     cpp/Pump.cpp \
     cpp/UI.cpp \
     cpp/authmanager.cpp \
@@ -28,6 +29,7 @@ HEADERS += \
     headers/InsulinCartridge.h \
     headers/BolusCalculator.h \
     headers/Profile.h \
+    headers/PumpHistory.h \
     headers/Pump.h \
     headers/UI.h \
     headers/authmanager.h \

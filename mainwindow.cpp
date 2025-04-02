@@ -17,9 +17,6 @@ MainWindow::MainWindow(StatusBar *sb, QWidget *parent)
     statusBar = sb;
     ui->statusBarContainer->layout()->addWidget(statusBar);
 
-//    ui->Bolus_Groupbox->setVisible(false);
-//    ui->groupBox_2->setVisible(false);
-
     QGroupBox *bolusGroupBox = findChild<QGroupBox*>("Bolus_Groupbox");
     if (bolusGroupBox) {
         bolusGroupBox->setVisible(false);
@@ -41,6 +38,7 @@ MainWindow::MainWindow(StatusBar *sb, QWidget *parent)
                 QString profileName = ui->profile_list->currentItem()->text();
                 pump->selectActiveProfile(profileName);
                 updateHistoryTab();
+                updateSettingsTab();
             }
         });
     }
@@ -81,6 +79,20 @@ MainWindow::MainWindow(StatusBar *sb, QWidget *parent)
             prof->addInsulinDose(dose2);
         }
     }
+    
+    if (pump->getActiveProfile()) {
+        updateHistoryTab();
+        updateSettingsTab();
+        
+        QString activeName = pump->getActiveProfile()->getName();
+        for (int i = 0; i < ui->profile_list->count(); ++i) {
+            if (ui->profile_list->item(i)->text() == activeName) {
+                ui->profile_list->setCurrentRow(i);
+                break;
+            }
+        }
+    }
+
     connect(ui->profile_create_button, SIGNAL(released()), this, SLOT(on_createProfileButton_clicked()));
 
 
@@ -111,10 +123,9 @@ void MainWindow::createProfile() {
     double br = ui->new_profile_br_box->value();
     double cf = ui->new_profile_cf_box->value();
     double cr = ui->new_profile_cr_box->value();
-    double tmax = ui->new_profile_min_box->value();
+    double tmax = ui->new_profile_max_box->value();
     double tmin = ui->new_profile_min_box->value();
 
-    // Check for existing profile first
     if (pump->findIndex(name) != -1) {
         qDebug() << "Profile already exists";
         return;
@@ -123,6 +134,18 @@ void MainWindow::createProfile() {
     pump->createProfile(name, br, cr, cf, tmin, tmax);
     ui->profile_list->addItem(name);
     ui->new_profile_name_box->clear();
+    
+    pump->selectActiveProfile(name);
+    
+    updateHistoryTab();
+    updateSettingsTab();
+    
+    for (int i = 0; i < ui->profile_list->count(); ++i) {
+        if (ui->profile_list->item(i)->text() == name) {
+            ui->profile_list->setCurrentRow(i);
+            break;
+        }
+    }
 }
 
 void MainWindow::deleteProfile(){
@@ -142,14 +165,17 @@ void MainWindow::editProfile(){
 }
 
 void MainWindow::selectProfile(){
+    if (!ui->profile_list->currentItem()) {
+        return;
+    }
+    
     QString name = ui->profile_list->currentItem()->text().trimmed();
     qDebug() << "selected profile name:" << name;
+    
     pump->selectActiveProfile(name);
-    Profile* activeProfile = pump->getActiveProfile();
-    ui->setting_name_label->setText(QString("Name:") + name);
-    ui->setting_br_label->setText(QString("Basal Rate:") + QString::number(activeProfile->getBasalRate()));
-    ui->setting_cr_label->setText(QString("Carb Ratio:") + QString::number(activeProfile->getCarbRatio()));
-    ui->setting_cf_label->setText(QString("Correction Factor:") + QString::number(activeProfile->getCorrectionFactor()));
+    
+    updateHistoryTab();
+    updateSettingsTab();
 }
 
 void MainWindow::updateHistoryTab() {
@@ -161,12 +187,30 @@ void MainWindow::updateHistoryTab() {
         return;
     }
     
-    
     QVector<GlucoseReading> glucoseReadings = activeProfile->getGlucoseReadings();
     QVector<InsulinDose> insulinDoses = activeProfile->getInsulinDoses();
     
+    PumpHistory* pumpHistory = pump->getPumpHistory();
+    QVector<BasalRateEvent> basalEvents;
+    QVector<BolusEvent> bolusEvents;
+    QVector<AlertEvent> alertEvents;
+    QVector<SettingChangeEvent> settingEvents;
+    QVector<StatusEvent> statusEvents;
     
-    int totalRows = glucoseReadings.size() + insulinDoses.size();
+    if (pumpHistory) {
+        basalEvents = pumpHistory->getBasalRateEvents();
+        bolusEvents = pumpHistory->getBolusEvents();
+        alertEvents = pumpHistory->getAlertEvents();
+        settingEvents = pumpHistory->getSettingChangeEvents();
+        statusEvents = pumpHistory->getStatusEvents();
+    }
+    
+    
+    int totalRows = glucoseReadings.size() + insulinDoses.size() + 
+                   basalEvents.size() + bolusEvents.size() + 
+                   alertEvents.size() + settingEvents.size() + 
+                   statusEvents.size();
+                   
     ui->historyTable->setRowCount(totalRows);
     
     int currentRow = 0;
@@ -176,8 +220,7 @@ void MainWindow::updateHistoryTab() {
         QTableWidgetItem *dateTimeItem = new QTableWidgetItem(reading.timestamp.toString("yyyy-MM-dd hh:mm"));
         QTableWidgetItem *typeItem = new QTableWidgetItem("Glucose");
         QTableWidgetItem *valueItem = new QTableWidgetItem(QString::number(reading.value) + " mmol/L");
-        QTableWidgetItem *detailsItem = new QTableWidgetItem();
-        
+        QTableWidgetItem *detailsItem = new QTableWidgetItem("CGM Reading");
         
         dateTimeItem->setFlags(dateTimeItem->flags() & ~Qt::ItemIsEditable);
         typeItem->setFlags(typeItem->flags() & ~Qt::ItemIsEditable);
@@ -191,7 +234,6 @@ void MainWindow::updateHistoryTab() {
         
         currentRow++;
     }
-    
     
     for (const InsulinDose &dose : insulinDoses) {
         QTableWidgetItem *dateTimeItem = new QTableWidgetItem(dose.timestamp.toString("yyyy-MM-dd hh:mm"));
@@ -199,6 +241,25 @@ void MainWindow::updateHistoryTab() {
         QTableWidgetItem *valueItem = new QTableWidgetItem(QString::number(dose.amount) + " U");
         QTableWidgetItem *detailsItem = new QTableWidgetItem(dose.type);
         
+        dateTimeItem->setFlags(dateTimeItem->flags() & ~Qt::ItemIsEditable);
+        typeItem->setFlags(typeItem->flags() & ~Qt::ItemIsEditable);
+        valueItem->setFlags(valueItem->flags() & ~Qt::ItemIsEditable);
+        detailsItem->setFlags(detailsItem->flags() & ~Qt::ItemIsEditable);
+        
+        ui->historyTable->setItem(currentRow, 0, dateTimeItem);
+        ui->historyTable->setItem(currentRow, 1, typeItem);
+        ui->historyTable->setItem(currentRow, 2, valueItem);
+        ui->historyTable->setItem(currentRow, 3, detailsItem);
+        
+        currentRow++;
+    }
+    
+    
+    for (const BasalRateEvent &event : basalEvents) {
+        QTableWidgetItem *dateTimeItem = new QTableWidgetItem(event.timestamp.toString("yyyy-MM-dd hh:mm"));
+        QTableWidgetItem *typeItem = new QTableWidgetItem("Basal");
+        QTableWidgetItem *valueItem = new QTableWidgetItem(QString::number(event.rate) + " U/hr");
+        QTableWidgetItem *detailsItem = new QTableWidgetItem("Basal Rate Change");
         
         dateTimeItem->setFlags(dateTimeItem->flags() & ~Qt::ItemIsEditable);
         typeItem->setFlags(typeItem->flags() & ~Qt::ItemIsEditable);
@@ -213,12 +274,148 @@ void MainWindow::updateHistoryTab() {
         currentRow++;
     }
     
+    for (const BolusEvent &event : bolusEvents) {
+        QTableWidgetItem *dateTimeItem = new QTableWidgetItem(event.timestamp.toString("yyyy-MM-dd hh:mm"));
+        QTableWidgetItem *typeItem = new QTableWidgetItem("Bolus");
+        QTableWidgetItem *valueItem = new QTableWidgetItem(QString::number(event.amount) + " U");
+        
+        QString details = event.bolusType;
+        if (event.duration > 0) {
+            details += ", " + QString::number(event.duration) + " min";
+        }
+        if (event.carbInput > 0) {
+            details += ", " + QString::number(event.carbInput) + " g carbs";
+        }
+        if (event.bgInput > 0) {
+            details += ", BG: " + QString::number(event.bgInput) + " mmol/L";
+        }
+        
+        QTableWidgetItem *detailsItem = new QTableWidgetItem(details);
+        
+        dateTimeItem->setFlags(dateTimeItem->flags() & ~Qt::ItemIsEditable);
+        typeItem->setFlags(typeItem->flags() & ~Qt::ItemIsEditable);
+        valueItem->setFlags(valueItem->flags() & ~Qt::ItemIsEditable);
+        detailsItem->setFlags(detailsItem->flags() & ~Qt::ItemIsEditable);
+        
+        ui->historyTable->setItem(currentRow, 0, dateTimeItem);
+        ui->historyTable->setItem(currentRow, 1, typeItem);
+        ui->historyTable->setItem(currentRow, 2, valueItem);
+        ui->historyTable->setItem(currentRow, 3, detailsItem);
+        
+        currentRow++;
+    }
+    
+    for (const AlertEvent &event : alertEvents) {
+        QTableWidgetItem *dateTimeItem = new QTableWidgetItem(event.timestamp.toString("yyyy-MM-dd hh:mm"));
+        QTableWidgetItem *typeItem = new QTableWidgetItem("Alert");
+        QTableWidgetItem *valueItem = new QTableWidgetItem(event.alertType);
+        
+        QString details = "BG: " + QString::number(event.bgValue) + " mmol/L";
+        if (event.acknowledged) {
+            details += ", Acknowledged";
+        } else {
+            details += ", Not Acknowledged";
+        }
+        
+        QTableWidgetItem *detailsItem = new QTableWidgetItem(details);
+        
+        dateTimeItem->setFlags(dateTimeItem->flags() & ~Qt::ItemIsEditable);
+        typeItem->setFlags(typeItem->flags() & ~Qt::ItemIsEditable);
+        valueItem->setFlags(valueItem->flags() & ~Qt::ItemIsEditable);
+        detailsItem->setFlags(detailsItem->flags() & ~Qt::ItemIsEditable);
+        
+        ui->historyTable->setItem(currentRow, 0, dateTimeItem);
+        ui->historyTable->setItem(currentRow, 1, typeItem);
+        ui->historyTable->setItem(currentRow, 2, valueItem);
+        ui->historyTable->setItem(currentRow, 3, detailsItem);
+        
+        currentRow++;
+    }
+    
+    for (const SettingChangeEvent &event : settingEvents) {
+        QTableWidgetItem *dateTimeItem = new QTableWidgetItem(event.timestamp.toString("yyyy-MM-dd hh:mm"));
+        QTableWidgetItem *typeItem = new QTableWidgetItem("Setting");
+        QTableWidgetItem *valueItem = new QTableWidgetItem(event.settingName);
+        QTableWidgetItem *detailsItem = new QTableWidgetItem("Changed from " + event.oldValue + " to " + event.newValue);
+        
+        dateTimeItem->setFlags(dateTimeItem->flags() & ~Qt::ItemIsEditable);
+        typeItem->setFlags(typeItem->flags() & ~Qt::ItemIsEditable);
+        valueItem->setFlags(valueItem->flags() & ~Qt::ItemIsEditable);
+        detailsItem->setFlags(detailsItem->flags() & ~Qt::ItemIsEditable);
+        
+        ui->historyTable->setItem(currentRow, 0, dateTimeItem);
+        ui->historyTable->setItem(currentRow, 1, typeItem);
+        ui->historyTable->setItem(currentRow, 2, valueItem);
+        ui->historyTable->setItem(currentRow, 3, detailsItem);
+        
+        currentRow++;
+    }
+    
+    for (const StatusEvent &event : statusEvents) {
+        QTableWidgetItem *dateTimeItem = new QTableWidgetItem(event.timestamp.toString("yyyy-MM-dd hh:mm"));
+        QTableWidgetItem *typeItem = new QTableWidgetItem("Status");
+        QTableWidgetItem *valueItem = new QTableWidgetItem(event.statusType);
+        QTableWidgetItem *detailsItem = new QTableWidgetItem(event.statusDetails);
+        
+        dateTimeItem->setFlags(dateTimeItem->flags() & ~Qt::ItemIsEditable);
+        typeItem->setFlags(typeItem->flags() & ~Qt::ItemIsEditable);
+        valueItem->setFlags(valueItem->flags() & ~Qt::ItemIsEditable);
+        detailsItem->setFlags(detailsItem->flags() & ~Qt::ItemIsEditable);
+        
+        ui->historyTable->setItem(currentRow, 0, dateTimeItem);
+        ui->historyTable->setItem(currentRow, 1, typeItem);
+        ui->historyTable->setItem(currentRow, 2, valueItem);
+        ui->historyTable->setItem(currentRow, 3, detailsItem);
+        
+        currentRow++;
+    }
+    
+    
+    ui->historyTable->sortItems(0, Qt::DescendingOrder);
+    
     ui->historyTable->resizeColumnsToContents();
 }
 
-void MainWindow::on_tabWidget_currentChanged(int index) {
+void MainWindow::updateSettingsTab() {
+    Profile* activeProfile = pump->getActiveProfile();
+    if (!activeProfile) {
+        
+        ui->setting_name_label->setText("Name: None");
+        ui->setting_br_label->setText("Basal Rate: N/A");
+        ui->setting_cr_label->setText("Carb Ratio: N/A");
+        ui->setting_cf_label->setText("Correction Factor: N/A");
+        return;
+    }
     
-    if (index == 0) {
+    
+    ui->setting_name_label->setText("Name: " + activeProfile->getName());
+    ui->setting_br_label->setText("Basal Rate: " + QString::number(activeProfile->getBasalRate()) + " U/hr");
+    ui->setting_cr_label->setText("Carb Ratio: " + QString::number(activeProfile->getCarbRatio()) + " g/U");
+    ui->setting_cf_label->setText("Correction Factor: " + QString::number(activeProfile->getCorrectionFactor()) + " mmol/L/U");
+    
+    
+    QPair<double, double> targetRange = activeProfile->getTargetGlucoseRange();
+    if (ui->active_profile_groupbox->findChild<QLabel*>("setting_target_label") == nullptr) {
+        QLabel* targetLabel = new QLabel(ui->active_profile_groupbox);
+        targetLabel->setObjectName("setting_target_label");
+        targetLabel->setGeometry(10, 250, 241, 51);
+        QFont font;
+        font.setPointSize(16);
+        targetLabel->setFont(font);
+        targetLabel->show();
+    }
+    
+    QLabel* targetLabel = ui->active_profile_groupbox->findChild<QLabel*>("setting_target_label");
+    if (targetLabel) {
+        targetLabel->setText("Target Range: " + QString::number(targetRange.first) + 
+                          " - " + QString::number(targetRange.second) + " mmol/L");
+    }
+}
+
+void MainWindow::on_tabWidget_currentChanged(int index) {
+    if (index == 0) {  
         updateHistoryTab();
+    } else if (index == 2) {  
+        updateSettingsTab();
     }
 }

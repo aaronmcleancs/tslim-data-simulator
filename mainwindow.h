@@ -36,6 +36,7 @@ private slots:
     void deleteProfile();
     
     void updateHistoryTab();
+    void updateSettingsTab();
     void on_tabWidget_currentChanged(int index);
 
 private:
