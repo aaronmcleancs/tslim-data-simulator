@@ -411,6 +411,9 @@ void MainWindow::updateSettingsTab() {
     if (targetLabel) {
         targetLabel->setText("Target Range: " + QString::number(targetRange.first) + 
                           " - " + QString::number(targetRange.second) + " mmol/L");
+        QFont font;
+        font.setPointSize(16);
+        targetLabel->setFont(font);
     }
 }
 
@@ -467,3 +470,12 @@ void MainWindow::setupBloodSugarGraph() {
     plot->setBackground(Qt::white);
     plot->replot();
 }
+
+void MainWindow::on_setting_pin_update_button_clicked()
+{
+    QString newPin = ui->setting_pin_1->text() + ui->setting_pin_2->text() + ui->setting_pin_3->text() + ui->setting_pin_4->text();
+    AuthManager* authManager = AuthManager::getInstance();
+
+    authManager->setPinCode(newPin);
+}
+

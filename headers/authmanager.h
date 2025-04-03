@@ -2,32 +2,32 @@
 #define AUTHMANAGER_H
 
 #include <QObject>
+#include <QSettings>
 
 class AuthManager : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(bool authenticated READ isAuthenticated WRITE setAuthenticated NOTIFY authStateChanged)
 
 public:
-    // Singleton instance accessor
     static AuthManager* getInstance();
 
-    // Authentication state methods
     bool isAuthenticated() const;
     void setAuthenticated(bool authenticated);
 
+    // PIN code management methods
+    QString getPinCode() const;
+    bool setPinCode(const QString &newPin);
+    bool validatePin(const QString &pin);
+
 signals:
-    // Signal emitted when auth state changes
     void authStateChanged(bool authenticated);
 
 private:
-    // Private constructor for singleton
-    explicit AuthManager(QObject *parent = nullptr);
-
-    // Authentication state
-    bool m_authenticated;
-
-    // Singleton instance
+    AuthManager(QObject *parent = nullptr);
     static AuthManager* instance;
+    bool m_authenticated;
+    QSettings m_settings;
 };
 
 #endif // AUTHMANAGER_H

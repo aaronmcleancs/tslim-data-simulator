@@ -47,6 +47,8 @@ private slots:
     void updateSettingsTab();
     void on_tabWidget_currentChanged(int index);
 
+    void on_setting_pin_update_button_clicked();
+
 private:
     Ui::MainWindow *ui;
     Pump *pump;
