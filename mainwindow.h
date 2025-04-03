@@ -22,6 +22,7 @@ public:
 
 
     void setupBloodSugarGraph();
+    void loadGraphData();
 
 signals:
     void bolusShift();

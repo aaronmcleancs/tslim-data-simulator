@@ -101,6 +101,7 @@ MainWindow::MainWindow(StatusBar *sb, QWidget *parent)
             this, &MainWindow::onAuthStateChanged);
 
     setupBloodSugarGraph();
+    loadGraphData();
 }
 
 void MainWindow::onAuthStateChanged(bool authenticated)
@@ -469,6 +470,33 @@ void MainWindow::setupBloodSugarGraph() {
 
     plot->setBackground(Qt::white);
     plot->replot();
+}
+
+void MainWindow::loadGraphData(){
+    if (!pump || !pump->getActiveProfile()) {
+           return;
+       }
+
+    // Get the historical readings
+    const QVector<GlucoseReading>& readings = pump->getActiveProfile()->getGlucoseReadings();
+
+    QVector<double> xValues, yValues;
+    int pointCount = 0;
+
+    // Convert readings to plot data (last 20 readings only)
+    int startIdx = qMax(0, readings.size() - 20);
+    for (int i = startIdx; i < readings.size(); ++i) {
+        xValues.append(pointCount++);
+        yValues.append(readings[i].value);
+    }
+
+    // Update the graph
+    if (!xValues.isEmpty()) {
+        ui->graph->graph(0)->setData(xValues, yValues);
+        ui->graph->xAxis->setRange(0, qMin(19, xValues.size()-1));
+        ui->graph->yAxis->setRange(0, 20); // 0-20 mmol/L range
+        ui->graph->replot();
+    }
 }
 
 void MainWindow::on_setting_pin_update_button_clicked()
