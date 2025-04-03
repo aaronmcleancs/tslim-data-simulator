@@ -9,14 +9,51 @@ StatusModel* StatusModel::getInstance() {
     return instance;
 }
 
-StatusModel::StatusModel(QObject *parent) : QObject(parent), batteryLevel(0), rightText(0) {
+StatusModel::StatusModel(QObject *parent)
+    : QObject(parent)
+    , rightText(0)
+{
+    // Create and initialize the battery
+    battery = new Battery(this);
+
+    // Connect battery's signals to our own signals to forward changes
+    connect(battery, &Battery::chargeLevelChanged,
+            this, &StatusModel::batteryLevelChanged);
+    connect(battery, &Battery::chargingChanged,
+            this, &StatusModel::batteryChargingChanged);
+}
+
+int StatusModel::getBatteryLevel() const {
+    return battery->getChargeLevel();
 }
 
 void StatusModel::setBatteryLevel(int level) {
-    if (batteryLevel != level) {
-        batteryLevel = level;
-        emit batteryLevelChanged(level);
+    if (getBatteryLevel() != level) {
+        battery->setChargeLevel(level);
+        // No need to emit batteryLevelChanged here as it's already
+        // forwarded by the connection in the constructor
     }
+}
+
+bool StatusModel::isBatteryCharging() const {
+    return battery->isCharging();
+}
+
+void StatusModel::setBatteryCharging(bool charging) {
+    if (isBatteryCharging() != charging) {
+        battery->setCharging(charging);
+        // No need to emit batteryChargingChanged here as it's already
+        // forwarded by the connection in the constructor
+    }
+}
+
+void StatusModel::configureBatteryDrain(int interval, int amount) {
+    battery->setDrainInterval(interval);
+    battery->setDrainAmount(amount);
+}
+
+int StatusModel::getRightText() const {
+    return rightText;
 }
 
 void StatusModel::setRightText(int level) {
