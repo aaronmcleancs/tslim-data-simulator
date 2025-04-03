@@ -9,6 +9,7 @@ CONFIG += c++11
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    bolus.cpp \
     cpp/Battery.cpp \
     cpp/BolusCalculator.cpp \
     cpp/CGM.cpp \
@@ -25,6 +26,7 @@ SOURCES += \
     mainwindow.cpp \
     statusbar.cpp
 HEADERS += \
+    bolus.h \
     headers/Battery.h \
     headers/CGM.h \
     headers/InsulinCartridge.h \
@@ -41,6 +43,7 @@ HEADERS += \
     statusbar.h
 
 FORMS += \
+    bolus.ui \
     lockscreen2.ui \
     mainwindow.ui \
     statusbar.ui

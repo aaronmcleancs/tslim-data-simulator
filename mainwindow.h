@@ -20,7 +20,12 @@ public:
     MainWindow(StatusBar *sb, QWidget *parent = nullptr);
     ~MainWindow();
 
+
     void setupBloodSugarGraph();
+
+signals:
+    void bolusShift();
+
 
 private slots:
     void onAuthStateChanged(bool authenticated);

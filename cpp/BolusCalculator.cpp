@@ -6,45 +6,37 @@
 #include <QPushButton>
 #include <QLineEdit>
 #include "mainwindow.h"
+#include "headers/Pump.h"
 
 
-int BolusCalculator :: Carb_Bolus_Calculation(int total_carbs){
-     return static_cast<int>(total_carbs / activeProfile->getCarbRatio());
+double BolusCalculator :: Carb_Bolus_Calculation(int total_carbs){
+    Pump p1;
+    Profile* profile = p1.getActiveProfile();
+    return total_carbs/profile->getCarbRatio();
 }
 
-int BolusCalculator :: Correction_Bolus_Calculation(int current_glucose){
-    QPair<double, double> range = activeProfile->getTargetGlucoseRange();
-        double target = (range.first + range.second) / 2.0;
-        return static_cast<int>((current_glucose - target) / activeProfile->getCorrectionFactor());
+double
+BolusCalculator :: Correction_Bolus_Calculation(int current_glucose){
+    Pump p1;
+    Profile* profile = p1.getActiveProfile();
+    double target = (profile->getTargetGlucoseRange().first + profile->getTargetGlucoseRange().second) / 2.0;
+    return (current_glucose - target) / profile->getCorrectionFactor();
 }
 
-void BolusCalculator::total_bolus(int total_carbs, int current_glucose) {
+double BolusCalculator::total_bolus(int total_carbs, int current_glucose) {
     int carbBolus = Carb_Bolus_Calculation(total_carbs);
     int correctionBolus = Correction_Bolus_Calculation(current_glucose);
-    int totalBolus = carbBolus + correctionBolus;
+    double totalBolus = carbBolus + correctionBolus;
     bolus = totalBolus;
-    QGroupBox *gb1 = findChild<QGroupBox*>("Bolus_Groupbox");
-    QGroupBox *gb2 = findChild<QGroupBox*>("groupBox_2");
 
-    gb1->setVisible(false);
-    gb2->setVisible(true);
-
-    QLabel *l1 = findChild<QLabel*>("label_5");
-    QLabel *l2 = findChild<QLabel*>("label_6");
-    QLabel *l3 = findChild<QLabel*>("label_7");
-
-    l1->setText("Current Carbs : " + QString::number(total_carbs));
-    l2->setText("Current Glucose : " + QString::number(total_carbs));
-    l3->setText("Total Bolus : " + QString :: number(totalBolus));
-
+    return totalBolus;
 }
 
 
 void MainWindow::on_bolusButton_clicked()
 {
-    QGroupBox *gb1 = findChild<QGroupBox*>("Bolus_Groupbox");
-    gb1->setVisible(true);
-    gb1->setEnabled(true);
+    emit bolusShift();
+    qDebug()<<"shifting to bolus calculator.... ";
 
 }
 
@@ -91,8 +83,7 @@ void MainWindow::on_calculate_clicked()
 
 void MainWindow::on_pushButton_clicked()
 {
-    QGroupBox *gb2 = findChild<QGroupBox*>("groupBox_2");
-    gb2->setVisible(false);
+    qDebug()<<"Bolus delivery stopped";
 }
 
 

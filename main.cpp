@@ -11,6 +11,7 @@
 #include "headers/authmanager.h"
 #include "headers/lockscreen.h"
 #include "mainwindow.h"
+#include "bolus.h"
 
 int main(int argc, char *argv[])
 {
@@ -20,11 +21,23 @@ int main(int argc, char *argv[])
 
     AuthManager* authManager = AuthManager::getInstance();
     LockScreen* lockScreen = new LockScreen(statusBar);
+
+
+    bolus* Bolus = new bolus(nullptr);
+
     MainWindow* mainWindow = new MainWindow(statusBar1);
 
     QObject::connect(lockScreen, &LockScreen::unlocked, [=]() {
         mainWindow->show();
         lockScreen->hide();
+    });
+    QObject::connect(mainWindow, &MainWindow::bolusShift, [=]() {
+        mainWindow->hide();
+        Bolus->show();
+    });
+    QObject::connect(Bolus, &bolus::mainShift, [=]() {
+        mainWindow->show();
+        Bolus->hide();
     });
 
     QObject::connect(authManager, &AuthManager::authStateChanged, [=](bool authenticated) {
