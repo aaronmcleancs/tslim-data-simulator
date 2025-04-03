@@ -12,6 +12,8 @@ bolus::bolus(QWidget *parent) :
         ui->groupBox_2->setVisible(false);
         ui->radioButton->setVisible(false);
         ui->radioButton_2->setVisible(false);
+        ui->groupBox_3->setVisible(false);
+        ui->label_8->setVisible(false);
 }
 
 bolus::~bolus()
@@ -59,7 +61,7 @@ void bolus::on_pushButton_4_clicked()
         int bolus = b1.total_bolus(ui->lineEdit->text().toInt(), ui->lineEdit_2->text().toInt());
         qDebug()<<"bolus"<<bolus;
         ui->radioButton->setVisible(true);
-
+        ui->label_8->setVisible(true);
         ui->radioButton_2->setVisible(true);
 }
 
@@ -68,5 +70,12 @@ void bolus::on_pushButton_5_clicked()
 {
     ui->radioButton->setVisible(true);
     ui->radioButton_2->setVisible(true);
+    ui->label_8->setVisible(true);
+}
+
+
+void bolus::on_radioButton_clicked()
+{
+    ui->groupBox_3->setVisible(true);
 }
 
