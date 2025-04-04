@@ -59,16 +59,55 @@ int main(int argc, char *argv[]) {
         Bolus->show();
         // No need to hide mainWindow now - bolus is a separate window
     });
-    
-    // Connect bolus screen mainShift signal to return to main window
+
+    QObject::connect(mainWindow, &MainWindow::bolusStopped, [=]() {
+        mainWindow->setBolusState(false);
+        statusBar->setBolus(false);
+        statusBar1->setBolus(false);
+    });
+
     QObject::connect(Bolus, &bolus::mainShift, [=]() {
         Bolus->hide();
         // Navigate back to the content screen
         mainWindow->navigateToRoute(Route::CONTENT);
     });
-    
     // Show the main window
     mainWindow->show();
     
+    QObject::connect(Bolus, &bolus::BolusInitiated, [=]() {
+        mainWindow->setBolusState(true);
+        statusBar->setBolus(true);
+        statusBar1->setBolus(true);
+    });
+
+    QObject::connect(authManager, &AuthManager::authStateChanged, [=](bool authenticated) {
+        if (authenticated) {
+            mainWindow->show();
+            lockScreen->hide();
+        } else {
+            mainWindow->hide();
+            lockScreen->show();
+        }
+    });
+
+    // Add charging toggles for demo/testing purposes
+    // These would typically be connected to actual charger detection
+    // For example, you might add buttons in your UI to simulate plugging/unplugging
+
+    // Example: You could add methods to your MainWindow class:
+    // QObject::connect(mainWindow, &MainWindow::chargerConnected, [statusModel]() {
+    //     statusModel->setBatteryCharging(true);
+    // });
+    //
+    // QObject::connect(mainWindow, &MainWindow::chargerDisconnected, [statusModel]() {
+    //     statusModel->setBatteryCharging(false);
+    // });
+
+    if (authManager->isAuthenticated()) {
+        mainWindow->show();
+    } else {
+        lockScreen->show();
+    }
+
     return a.exec();
 }

@@ -29,11 +29,19 @@ public:
     MainWindow(StatusBar *statusBar, QWidget *parent = nullptr);
     ~MainWindow();
 
+
     // Navigate to a specific route
     void navigateToRoute(Route route);
 
+
+    void setupBloodSugarGraph();
+    void loadGraphData();
+    void setBolusState(bool b){bolusState= b;}
+
+
 signals:
     void bolusShift();
+    void bolusStopped();
 
 private slots:
     void onAuthStateChanged(bool authenticated);
@@ -42,9 +50,14 @@ private:
     Ui::MainWindow *ui;
     QVBoxLayout *routerLayout;
     StatusBar *statusBar;
+
     LockScreen *lockScreen;
     ContentWidget *contentWidget;
     QWidget *currentWidget;
+
+    bool bolusState;
+
+
 };
 
 #endif // MAINWINDOW_H

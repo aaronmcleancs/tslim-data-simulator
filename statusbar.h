@@ -17,6 +17,7 @@ public:
     explicit StatusBar(QWidget *parent = nullptr);
     ~StatusBar();
     static StatusBar* getInstance();
+    void setBolus(bool b);
 
 private:
     Ui::StatusBar *ui;
