@@ -33,7 +33,7 @@ public slots:
     void deleteProfile();
 
 signals:
-    void bolusRequested();
+    void openBolus();
 
 private:
     Ui::ContentWidget *ui;

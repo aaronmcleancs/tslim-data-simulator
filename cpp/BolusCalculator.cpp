@@ -36,35 +36,35 @@ double BolusCalculator::total_bolus(int total_carbs, int current_glucose) {
 }
 
 
-void MainWindow::on_bolusButton_clicked()
-{
-    emit bolusShift();
-    qDebug()<<"shifting to bolus calculator.... ";
+//void MainWindow::on_bolusButton_clicked()
+//{
+//    emit bolusShift();
+//    qDebug()<<"shifting to bolus calculator.... ";
 
-}
+//}
 
-void MainWindow::on_radioButton_clicked()
-{
-
-
-}
-void MainWindow::on_radioButton_2_clicked()
-{
-}
+//void MainWindow::on_radioButton_clicked()
+//{
 
 
-void MainWindow::on_calculate_clicked()
-{
+//}
+//void MainWindow::on_radioButton_2_clicked()
+//{
+//}
 
 
-}
+//void MainWindow::on_calculate_clicked()
+//{
 
-void MainWindow::on_pushButton_clicked()
-{
-    if(bolusState){
-        qDebug()<<"Bolus Stopped....";
-        emit bolusStopped();
-    }else{
-        qDebug()<<"Bolus is not initiated yet...";
-    }
-}
+
+//}
+
+//void MainWindow::on_pushButton_clicked()
+//{
+//    if(bolusState){
+//        qDebug()<<"Bolus Stopped....";
+//        emit bolusStopped();
+//    }else{
+//        qDebug()<<"Bolus is not initiated yet...";
+//    }
+//}

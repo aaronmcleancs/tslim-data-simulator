@@ -1,13 +1,13 @@
 #ifndef BOLUS_H
 #define BOLUS_H
 
-#include <QDialog>
+#include <QWidget>
 
 namespace Ui {
 class bolus;
 }
 
-class bolus : public QDialog
+class bolus : public QWidget
 {
     Q_OBJECT
 

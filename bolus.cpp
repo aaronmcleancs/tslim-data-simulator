@@ -4,7 +4,7 @@
 #include "headers/BolusCalculator.h"
 
 bolus::bolus(QWidget *parent) :
-    QDialog(parent),
+    QWidget(parent),
     ui(new Ui::bolus)
 {
     ui->setupUi(this);

@@ -35,79 +35,8 @@ int main(int argc, char *argv[]) {
     
     // Create status bar
     StatusBar* statusBar = new StatusBar(nullptr);
-    
-    // Create main window with status bar
     MainWindow* mainWindow = new MainWindow(statusBar);
-    
-    // Create bolus screen
-    bolus* Bolus = new bolus(nullptr);
-    
-    // Get auth manager instance
-    AuthManager* authManager = AuthManager::getInstance();
-    
-    // Connect battery level to status bar
-    QObject::connect(statusModel, &StatusModel::batteryLevelChanged,
-                    [statusBar](int level) {
-                        // Update battery level in UI
-                        // Replace with your actual method to update battery in statusBar
-                        // For example:
-                        // statusBar->updateBatteryLevel(level);
-                    });
-    
-    // Connect main window bolus signal to show bolus screen
-    QObject::connect(mainWindow, &MainWindow::bolusShift, [=]() {
-        Bolus->show();
-        // No need to hide mainWindow now - bolus is a separate window
-    });
-
-    QObject::connect(mainWindow, &MainWindow::bolusStopped, [=]() {
-        mainWindow->setBolusState(false);
-        statusBar->setBolus(false);
-        statusBar1->setBolus(false);
-    });
-
-    QObject::connect(Bolus, &bolus::mainShift, [=]() {
-        Bolus->hide();
-        // Navigate back to the content screen
-        mainWindow->navigateToRoute(Route::CONTENT);
-    });
     // Show the main window
     mainWindow->show();
-    
-    QObject::connect(Bolus, &bolus::BolusInitiated, [=]() {
-        mainWindow->setBolusState(true);
-        statusBar->setBolus(true);
-        statusBar1->setBolus(true);
-    });
-
-    QObject::connect(authManager, &AuthManager::authStateChanged, [=](bool authenticated) {
-        if (authenticated) {
-            mainWindow->show();
-            lockScreen->hide();
-        } else {
-            mainWindow->hide();
-            lockScreen->show();
-        }
-    });
-
-    // Add charging toggles for demo/testing purposes
-    // These would typically be connected to actual charger detection
-    // For example, you might add buttons in your UI to simulate plugging/unplugging
-
-    // Example: You could add methods to your MainWindow class:
-    // QObject::connect(mainWindow, &MainWindow::chargerConnected, [statusModel]() {
-    //     statusModel->setBatteryCharging(true);
-    // });
-    //
-    // QObject::connect(mainWindow, &MainWindow::chargerDisconnected, [statusModel]() {
-    //     statusModel->setBatteryCharging(false);
-    // });
-
-    if (authManager->isAuthenticated()) {
-        mainWindow->show();
-    } else {
-        lockScreen->show();
-    }
-
     return a.exec();
 }
