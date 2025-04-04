@@ -57,6 +57,7 @@ int main(int argc, char *argv[]) {
         Bolus->show();
         // No need to hide mainWindow now - bolus is a separate window
     });
+
     
     // Connect bolus screen mainShift signal to return to main window
     QObject::connect(Bolus, &bolus::mainShift, [=]() {

@@ -4,17 +4,17 @@
 #include "headers/BolusCalculator.h"
 
 bolus::bolus(Pump* pump, QWidget *parent) :
-    QDialog(parent),
+    //QDialog(parent),
     ui(new Ui::bolus),
     pump(pump)
 
 {
     ui->setupUi(this);
-    ui->groupBox->setVisible(false);
-    ui->groupBox_2->setVisible(false);
-    ui->radioButton->setVisible(false);
-    ui->radioButton_2->setVisible(false);
-    ui->groupBox_3->setVisible(false);
+    //ui->groupBox->setVisible(false);
+    //ui->groupBox_2->setVisible(false);
+    //ui->radioButton->setVisible(false);
+    //ui->radioButton_2->setVisible(false);
+    //ui->groupBox_3->setVisible(false);
     ui->label_8->setVisible(false);
     ui->label_4->setVisible(false);
     ui->label_5->setVisible(false);
@@ -29,6 +29,8 @@ bolus::bolus(Pump* pump, QWidget *parent) :
     ui->label_7->setVisible(false);
     ui->label_9->setVisible(false);
     ui->InitiateBolus->setVisible(false);
+    checked = false;
+    emit mainShift();
 }
 
 bolus::~bolus()
@@ -50,34 +52,17 @@ void bolus::on_pushButton_4_clicked()
     totalBolus = b1.total_bolus(ui->lineEdit->text().toInt(), ui->lineEdit_2->text().toInt());
     ui->label_4->setText(QString :: number(totalBolus,'g',5));
     ui->checkBox->setVisible(true);
+    //ui->radioButton->setVisible(true);
+   // ui->radioButton_2->setVisible(true);
 
 }
 
-
-void bolus::on_pushButton_3_clicked()
-{
-    ui->label_4->setVisible(false);
-    ui->label_5->setVisible(false);
-    ui->label_6->setVisible(false);
-    ui->label_8->setVisible(false);
-    ui->checkBox->setVisible(false);
-    ui->lineEdit_3->setVisible(false);
-    ui->lineEdit_4->setVisible(false);
-    ui->pushButton_2->setVisible(false);
-    ui->label_10->setVisible(false);
-    ui->label_11->setVisible(false);
-    ui->label_7->setVisible(false);
-    ui->label_9->setVisible(false);
-    ui->InitiateBolus->setVisible(false);
-    checked = false;
-    emit mainShift();
-}
 
 // this is the automatic button (As the ceo of controliq i approve! :D)
 void bolus::on_pushButton_3_clicked()
 {
     ui->pushButton_2->setDisabled(true);
-    ui->groupBox_2->setVisible(true);
+    //ui->groupBox_2->setVisible(true);
 
     if (!pump) {
         qDebug() << "Pump is not initialized!";
@@ -99,22 +84,6 @@ void bolus::on_pushButton_3_clicked()
     cgm->setControlIQActive(true);
     qDebug() << "ControlIQ started!";
 }
-
-
-
-
-
-void bolus::on_pushButton_4_clicked()
-{
-    BolusCalculator b1;
-    int bolus = b1.total_bolus(ui->lineEdit->text().toInt(), ui->lineEdit_2->text().toInt());
-    qDebug()<<"bolus"<<bolus;
-    ui->radioButton->setVisible(true);
-    ui->label_8->setVisible(true);
-    ui->radioButton_2->setVisible(true);
-
-
-
 
 
 void bolus::on_checkBox_stateChanged(int arg1)
