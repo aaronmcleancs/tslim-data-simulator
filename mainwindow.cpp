@@ -23,6 +23,8 @@ MainWindow::MainWindow(StatusBar *statusBar, QWidget *parent)
     // Initialize screens
     lockScreen = new LockScreen(this->statusBar);
     contentWidget = new ContentWidget();
+    this->pump = contentWidget->getPump();
+    
     bolusWidget = new bolus(nullptr);
     // Connect authentication state changes
     AuthManager* authManager = AuthManager::getInstance();
@@ -78,6 +80,10 @@ void MainWindow::navigateToRoute(Route route)
     // Add and show the current widget
     routerLayout->addWidget(currentWidget);
     currentWidget->show();
+}
+
+Pump* MainWindow::getPump() const {
+    return pump;
 }
 
 void MainWindow::onAuthStateChanged(bool authenticated)

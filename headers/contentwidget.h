@@ -23,6 +23,7 @@ public:
     void loadGraphData();
     void updateHistoryTab();
     void updateSettingsTab();
+    Pump* getPump() const;
 
 public slots:
     void on_tabWidget_currentChanged(int index);

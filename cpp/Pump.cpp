@@ -6,7 +6,9 @@ Pump::Pump(QObject *parent)
     : QObject(parent), activeProfile(nullptr), battery(nullptr),
       insulinCartridge(nullptr), cgm(nullptr), pumpHistory(nullptr)
 {
-    //any more constructor code here
+    insulinCartridge = new InsulinCartridge(this);
+    cgm = new CGM(this);
+    qDebug() << "Pump constructor: CGM initialized"; // Using this purely for debug purposes
 }
 
 Pump::~Pump(){
@@ -162,6 +164,14 @@ void Pump::selectActiveProfile(QString name){
         delete pumpHistory;
     }
     pumpHistory = new PumpHistory(name, this);
+    if (cgm) {
+            cgm->setProfile(activeProfile);
+            cgm->startMonitoring();
+            qDebug() << "CGM started monitoring with profile:" << activeProfile->getName();
+        } else {
+            qWarning() << "CGM is null in selectActiveProfile!";
+        }
+
     
     recordStatusEvent("Profile Change", "Changed active profile from " + oldProfile + " to " + name);
 }

@@ -17,23 +17,31 @@ public:
 
     void startMonitoring();
     void stopMonitoring();
+    void setProfile(Profile* p);
     double getCurrentGlucoseLevel() const;
     double getCurrentCarbs() const;
     double estimateCarbs();
     void setGlucoseLabel(QLabel *label);
+    void setControlIQActive(bool active);
+    bool isControlIQActive() const;
+
+signals:
+    void newGlucoseReading(double glucoseLevel); // To ControlIQ
+public slots:
+    void updateGlucoseLevelFromControlIQ(double newGlucoseLevel); // From ControlIQ
 
 private slots:
     void update();
 
 private:
     double currentGlucoseLevel;
+    bool controlIQActive;
     double currentCarbs;
     QTimer *monitoringTimer;
     Battery *battery;
     Profile *profile;
-    QLabel *glucoseLabel;
-
-    void fetchLatestGlucoseReading();
+    double controlIQNewGlucoseLevel;
+    void fetchLatestGlucoseReading();  // From profile
 };
 
-#endif // CGM_H
+#endif

@@ -36,6 +36,35 @@ int main(int argc, char *argv[]) {
     // Create status bar
     StatusBar* statusBar = new StatusBar(nullptr);
     MainWindow* mainWindow = new MainWindow(statusBar);
+    
+    // Create bolus screen
+    bolus* Bolus = new bolus(mainWindow->getPump(),nullptr);
+    
+    // Get auth manager instance
+    AuthManager* authManager = AuthManager::getInstance();
+    
+    // Connect battery level to status bar
+    QObject::connect(statusModel, &StatusModel::batteryLevelChanged,
+                    [statusBar](int level) {
+                        // Update battery level in UI
+                        // Replace with your actual method to update battery in statusBar
+                        // For example:
+                        // statusBar->updateBatteryLevel(level);
+                    });
+    
+    // Connect main window bolus signal to show bolus screen
+    QObject::connect(mainWindow, &MainWindow::bolusShift, [=]() {
+        Bolus->show();
+        // No need to hide mainWindow now - bolus is a separate window
+    });
+    
+    // Connect bolus screen mainShift signal to return to main window
+    QObject::connect(Bolus, &bolus::mainShift, [=]() {
+        Bolus->hide();
+        // Navigate back to the content screen
+        mainWindow->navigateToRoute(Route::CONTENT);
+    });
+    
     // Show the main window
     mainWindow->show();
     return a.exec();

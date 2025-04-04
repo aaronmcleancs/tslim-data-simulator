@@ -11,6 +11,7 @@ CONFIG += c++11
 SOURCES += \
     bolus.cpp \
     cpp/Battery.cpp \
+    cpp/ControlIQ.cpp \
     cpp/BolusCalculator.cpp \
     cpp/CGM.cpp \
     cpp/InsulinCartridge.cpp \
@@ -28,6 +29,7 @@ SOURCES += \
 HEADERS += \
     bolus.h \
     headers/Battery.h \
+    headers/ControlIQ.h \
     headers/CGM.h \
     headers/InsulinCartridge.h \
     headers/BolusCalculator.h \

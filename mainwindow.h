@@ -33,6 +33,8 @@ public:
 
     // Navigate to a specific route
     void navigateToRoute(Route route);
+    Pump* getPump() const;
+
 
 
     void setupBloodSugarGraph();
@@ -53,9 +55,8 @@ private:
     ContentWidget *contentWidget;
     bolus *bolusWidget;
     QWidget *currentWidget;
-
+    Pump* pump;
     bool bolusState;
-
 
 };
 
