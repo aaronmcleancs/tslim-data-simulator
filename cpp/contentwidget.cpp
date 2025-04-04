@@ -43,7 +43,7 @@ ContentWidget::ContentWidget(QWidget *parent)
 
     // Connect the bolus button if it exists
     if (ui->bolusButton) {
-        connect(ui->bolusButton, &QPushButton::clicked, this, &ContentWidget::bolusRequested);
+        connect(ui->bolusButton, &QPushButton::clicked, this, &ContentWidget::openBolus);
     }
 
     pump = new Pump(nullptr);

@@ -7,6 +7,7 @@
 #include "statusbar.h"
 #include "headers/contentwidget.h"
 #include "headers/lockscreen.h"
+#include "bolus.h"
 
 // Enum to represent different screens in the application
 enum class Route {
@@ -29,25 +30,34 @@ public:
     MainWindow(StatusBar *statusBar, QWidget *parent = nullptr);
     ~MainWindow();
 
+
     // Navigate to a specific route
     void navigateToRoute(Route route);
     Pump* getPump() const;
 
 
-signals:
-    void bolusShift();
+
+    void setupBloodSugarGraph();
+    void loadGraphData();
+    void setBolusState(bool b){bolusState= b;}
 
 private slots:
     void onAuthStateChanged(bool authenticated);
+
+    void on_homeButton_clicked();
 
 private:
     Ui::MainWindow *ui;
     QVBoxLayout *routerLayout;
     StatusBar *statusBar;
+
     LockScreen *lockScreen;
     ContentWidget *contentWidget;
+    bolus *bolusWidget;
     QWidget *currentWidget;
     Pump* pump;
+    bool bolusState;
+
 };
 
 #endif // MAINWINDOW_H

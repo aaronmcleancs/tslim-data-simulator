@@ -25,18 +25,16 @@ MainWindow::MainWindow(StatusBar *statusBar, QWidget *parent)
     contentWidget = new ContentWidget();
     this->pump = contentWidget->getPump();
     
+    bolusWidget = new bolus(nullptr);
     // Connect authentication state changes
     AuthManager* authManager = AuthManager::getInstance();
     connect(authManager, &AuthManager::authStateChanged, this, &MainWindow::onAuthStateChanged);
     
     // Connect lock screen unlock signal
-    connect(lockScreen, &LockScreen::unlocked, [this]() {
-        navigateToRoute(Route::CONTENT);
+    connect(contentWidget, &ContentWidget::openBolus, [this]() {
+        navigateToRoute(Route::BOLUS);
     });
-    
-    // Connect content widget's bolus button to MainWindow's bolusShift signal
-    connect(contentWidget, &ContentWidget::bolusRequested, this, &MainWindow::bolusShift);
-    
+
     // Set initial screen based on authentication
     if (authManager->isAuthenticated()) {
         navigateToRoute(Route::CONTENT);
@@ -64,21 +62,15 @@ void MainWindow::navigateToRoute(Route route)
             currentWidget = lockScreen;
             break;
             
-        case Route::CONTENT:
-            currentWidget = contentWidget;
-            break;
-            
         case Route::BOLUS:
-            // Emit signal to show bolus screen (handled outside this class)
-            emit bolusShift();
-            return;  // Return early as we're not changing the current widget
+            currentWidget = bolusWidget;
+            break;
             
         case Route::SETTINGS:
             // Add settings screen handling here
             break;
-            
-        // Add more cases as needed
-        
+
+        case Route::CONTENT:
         default:
             // Default to content if unknown route
             currentWidget = contentWidget;
@@ -102,3 +94,14 @@ void MainWindow::onAuthStateChanged(bool authenticated)
         navigateToRoute(Route::LOCK_SCREEN);
     }
 }
+
+void MainWindow::on_homeButton_clicked()
+{
+    AuthManager* authManager = AuthManager::getInstance();
+    if (authManager->isAuthenticated()) {
+        navigateToRoute(Route::CONTENT);
+    } else {
+        navigateToRoute(Route::LOCK_SCREEN);
+    }
+}
+

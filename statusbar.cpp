@@ -15,7 +15,11 @@ StatusBar::StatusBar(QWidget *parent) :
     ui(new Ui::StatusBar)
 {
     ui->setupUi(this);
+
     ui->batteryToggleButton->setCheckable(true);
+
+
+    ui->progressBar->setVisible(false);
 
     StatusModel* model = StatusModel::getInstance();
     connect(model, &StatusModel::batteryLevelChanged, this, &StatusBar::onBatteryLevelChanged);
@@ -42,4 +46,8 @@ void StatusBar::onBatteryLevelChanged(int level) {
 void StatusBar::onUnitsChanged(int level) {
     // implement units text update logic here
     ui->insulinLevel->setValue(level);
+}
+
+void StatusBar :: setBolus(bool b){
+    ui->progressBar->setTextVisible(b);
 }

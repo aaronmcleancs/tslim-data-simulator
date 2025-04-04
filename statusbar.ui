@@ -100,6 +100,19 @@
     </spacer>
    </item>
    <item>
+    <widget class="QProgressBar" name="progressBar">
+     <property name="value">
+      <number>100</number>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="format">
+      <string>b     </string>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QProgressBar" name="insulinLevel">
      <property name="maximumSize">
       <size>

@@ -35,8 +35,6 @@ int main(int argc, char *argv[]) {
     
     // Create status bar
     StatusBar* statusBar = new StatusBar(nullptr);
-    
-    // Create main window with status bar
     MainWindow* mainWindow = new MainWindow(statusBar);
     
     // Create bolus screen
@@ -69,6 +67,5 @@ int main(int argc, char *argv[]) {
     
     // Show the main window
     mainWindow->show();
-    
     return a.exec();
 }
