@@ -40,7 +40,7 @@ int main(int argc, char *argv[]) {
     MainWindow* mainWindow = new MainWindow(statusBar);
     
     // Create bolus screen
-    bolus* Bolus = new bolus(nullptr);
+    bolus* Bolus = new bolus(mainWindow->getPump(),nullptr);
     
     // Get auth manager instance
     AuthManager* authManager = AuthManager::getInstance();

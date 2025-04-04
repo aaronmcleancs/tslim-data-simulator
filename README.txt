@@ -5,6 +5,7 @@
 ├── headers/
 │   ├── Battery.h
 │   ├── BolusCalculator.h
+│   ├── ControlIQ.h
 │   ├── CGM.h
 │   ├── InsulinCartridge.h
 │   ├── Profile.h
@@ -18,6 +19,7 @@
 ├── cpp/
 │   ├── Battery.cpp
 │   ├── BolusCalculator.cpp
+│   ├── ControlIQ.cpp
 │   ├── CGM.cpp
 │   ├── InsulinCartridge.cpp
 │   ├── Profile.cpp

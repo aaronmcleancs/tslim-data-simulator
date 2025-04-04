@@ -106,6 +106,7 @@ QPair<double, double> Profile::getTargetGlucoseRange() const {
 
 void Profile::addGlucoseReading(const GlucoseReading &reading) {
     glucoseReadings.append(reading);
+    emit glucoseReadingAdded();
     saveHistoricalData();
 }
 

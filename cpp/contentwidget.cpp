@@ -100,11 +100,17 @@ ContentWidget::ContentWidget(QWidget *parent)
 
     setupBloodSugarGraph();
     loadGraphData();
+    connect(pump->getActiveProfile(), &Profile::glucoseReadingAdded, this, &ContentWidget::loadGraphData);
+
 }
 
 ContentWidget::~ContentWidget()
 {
     delete ui;
+}
+
+Pump* ContentWidget::getPump() const {
+    return pump;
 }
 
 void ContentWidget::createProfile() {
@@ -469,7 +475,7 @@ void ContentWidget::loadGraphData() {
 
     // Get the historical readings
     const QVector<GlucoseReading>& readings = pump->getActiveProfile()->getGlucoseReadings();
-
+    ui->label_2->setText(QString::number(readings.last().value)); // i just  put this here for convienience, gotta update graph so might aswell update lebell aswell
     QVector<double> xValues, yValues;
     int pointCount = 0;
 

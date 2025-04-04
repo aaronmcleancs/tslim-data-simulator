@@ -66,6 +66,8 @@ public:
     static QStringList getAvailableProfiles();
     static bool deleteProfile(const QString &name);
     static bool createProfile(const QString &name);
+signals:
+    void glucoseReadingAdded();
 
 private:
     QString profileName;

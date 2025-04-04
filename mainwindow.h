@@ -31,6 +31,8 @@ public:
 
     // Navigate to a specific route
     void navigateToRoute(Route route);
+    Pump* getPump() const;
+
 
 signals:
     void bolusShift();
@@ -45,6 +47,7 @@ private:
     LockScreen *lockScreen;
     ContentWidget *contentWidget;
     QWidget *currentWidget;
+    Pump* pump;
 };
 
 #endif // MAINWINDOW_H
