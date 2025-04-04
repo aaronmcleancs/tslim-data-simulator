@@ -68,10 +68,23 @@ void Battery::setDrainAmount(int amount) {
     }
 }
 
+
+void Battery::resetToFull() {
+    setChargeLevel(100);
+}
+
 void Battery::drainBattery() {
-    // Only drain if we're not charging
-    if (!charging) {
-        // Get current level and calculate new level
+    if (charging) {
+        // When charging, increase battery level (capped at 100%)
+        int newLevel = qMin(100, chargeLevel + drainAmount);
+
+        // Update charge level
+        if (newLevel != chargeLevel) {
+            chargeLevel = newLevel;
+            emit chargeLevelChanged(chargeLevel);
+        }
+    } else {
+        // When not charging, decrease battery level
         int newLevel = qMax(0, chargeLevel - drainAmount);
 
         // Update charge level
@@ -87,21 +100,15 @@ void Battery::drainBattery() {
     }
 }
 
-void Battery::resetToFull() {
-    setChargeLevel(100);
-}
-
 void Battery::updateDrainTimer() {
-    // If charging, stop the drain timer
-    if (charging) {
-        if (drainTimer->isActive()) {
-            drainTimer->stop();
-        }
+    // Whether charging or discharging, we want the timer to run
+    // to either charge or discharge the battery
+    if (!drainTimer->isActive()) {
+        drainTimer->start();
     }
-    // If not charging and battery not empty, start the drain timer
-    else {
-        if (!drainTimer->isActive() && chargeLevel > 0) {
-            drainTimer->start();
-        }
+
+    // If battery is empty and not charging, stop the timer
+    if (chargeLevel <= 0 && !charging) {
+        drainTimer->stop();
     }
 }

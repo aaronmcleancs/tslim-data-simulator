@@ -8,7 +8,6 @@
 #include "CGM.h"
 #include "Profile.h"
 #include "PumpHistory.h"
-#include "UI.h"
 
 // Example Header File for initial repo
 // Feel free to change any of this to your implementation
@@ -23,7 +22,6 @@ public:
     Battery* getBattery() const;
     InsulinCartridge* getInsulinCartridge() const;
     CGM* getCGM() const;
-    UI* getUI() const;
     PumpHistory* getPumpHistory() const;
 
     void createProfile(QString n, double br, double cr, double cf, double tmin, double tmax);
@@ -68,7 +66,6 @@ private:
     Battery *battery;
     InsulinCartridge *insulinCartridge;
     CGM *cgm;
-    UI *ui;
     PumpHistory *pumpHistory;
     QVector<Profile*> profiles;
 };

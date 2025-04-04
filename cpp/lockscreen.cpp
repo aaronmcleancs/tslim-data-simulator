@@ -1,13 +1,11 @@
 #include "headers/lockscreen.h"
 #include "ui_lockscreen2.h"
 
-LockScreen::LockScreen(StatusBar *sb, QWidget *parent) :
+LockScreen::LockScreen(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::LockScreen)
 {
     ui->setupUi(this);
-    statusBar = sb;
-    ui->statusBarContainer->layout()->addWidget(statusBar);
     authManager = AuthManager::getInstance();
     for (int i = 0; i <= 9; i++) {
         QString buttonName = "button" + QString::number(i);

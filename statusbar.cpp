@@ -15,9 +15,15 @@ StatusBar::StatusBar(QWidget *parent) :
     ui(new Ui::StatusBar)
 {
     ui->setupUi(this);
+    ui->batteryToggleButton->setCheckable(true);
+
     StatusModel* model = StatusModel::getInstance();
     connect(model, &StatusModel::batteryLevelChanged, this, &StatusBar::onBatteryLevelChanged);
     connect(model, &StatusModel::rightTextChanged, this, &StatusBar::onUnitsChanged);
+    connect(ui->batteryToggleButton, &QPushButton::toggled, [](bool checked) {
+        StatusModel* statusModel = StatusModel::getInstance();
+        statusModel->setBatteryCharging(checked);
+    });
 
     onBatteryLevelChanged(model->getBatteryLevel());
     onUnitsChanged(model->getRightText());

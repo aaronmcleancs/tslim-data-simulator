@@ -4,7 +4,7 @@
 
 Pump::Pump(QObject *parent)
     : QObject(parent), activeProfile(nullptr), battery(nullptr),
-      insulinCartridge(nullptr), cgm(nullptr), ui(nullptr), pumpHistory(nullptr)
+      insulinCartridge(nullptr), cgm(nullptr), pumpHistory(nullptr)
 {
     //any more constructor code here
 }
@@ -19,7 +19,6 @@ Pump::~Pump(){
     delete battery;
     delete insulinCartridge;
     delete cgm;
-    delete ui;
     delete pumpHistory;
 }
 
@@ -33,10 +32,6 @@ InsulinCartridge* Pump::getInsulinCartridge() const {
 
 CGM* Pump::getCGM() const {
     return cgm;
-}
-
-UI* Pump::getUI() const {
-    return ui;
 }
 
 PumpHistory* Pump::getPumpHistory() const {

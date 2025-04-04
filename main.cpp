@@ -10,26 +10,21 @@
 #include "headers/BolusCalculator.h"
 #include "headers/authmanager.h"
 #include "headers/lockscreen.h"
-#include "headers/statusmodel.h"  // Added the StatusModel header
+#include "headers/statusmodel.h"
 #include "mainwindow.h"
 #include "bolus.h"
 
 int main(int argc, char *argv[]) {
     QApplication a(argc, argv);
-
+    
     // Get status model instance
     StatusModel* statusModel = StatusModel::getInstance();
-
-    // Battery is already initialized with defaults in the Battery constructor:
-    // - Level: 100%
-    // - Drain rate: 1% per minute
-    // - Charging state: false (discharging)
-
+    
     // Monitor battery level changes
     QObject::connect(statusModel, &StatusModel::batteryLevelChanged,
                     [](int level) {
                         qDebug() << "Battery level: " << level << "%";
-
+                        
                         // Example of how to handle low battery warnings
                         if (level <= 20 && level > 10) {
                             qDebug() << "Warning: Battery low";
@@ -37,73 +32,43 @@ int main(int argc, char *argv[]) {
                             qDebug() << "Warning: Battery critically low";
                         }
                     });
-
-    // Your existing code
+    
+    // Create status bar
     StatusBar* statusBar = new StatusBar(nullptr);
-    StatusBar* statusBar1 = new StatusBar(nullptr);
-
-    AuthManager* authManager = AuthManager::getInstance();
-    LockScreen* lockScreen = new LockScreen(statusBar);
-
+    
+    // Create main window with status bar
+    MainWindow* mainWindow = new MainWindow(statusBar);
+    
+    // Create bolus screen
     bolus* Bolus = new bolus(nullptr);
-
-    MainWindow* mainWindow = new MainWindow(statusBar1);
-
-    // Connect battery level to your status bars
-    // Assuming your StatusBar class has a method to update battery level
+    
+    // Get auth manager instance
+    AuthManager* authManager = AuthManager::getInstance();
+    
+    // Connect battery level to status bar
     QObject::connect(statusModel, &StatusModel::batteryLevelChanged,
-                    [statusBar, statusBar1](int level) {
+                    [statusBar](int level) {
                         // Update battery level in UI
                         // Replace with your actual method to update battery in statusBar
                         // For example:
                         // statusBar->updateBatteryLevel(level);
-                        // statusBar1->updateBatteryLevel(level);
                     });
-
-    // Your existing connections
-    QObject::connect(lockScreen, &LockScreen::unlocked, [=]() {
-        mainWindow->show();
-        lockScreen->hide();
-    });
-
+    
+    // Connect main window bolus signal to show bolus screen
     QObject::connect(mainWindow, &MainWindow::bolusShift, [=]() {
-        mainWindow->hide();
         Bolus->show();
+        // No need to hide mainWindow now - bolus is a separate window
     });
-
+    
+    // Connect bolus screen mainShift signal to return to main window
     QObject::connect(Bolus, &bolus::mainShift, [=]() {
-        mainWindow->show();
         Bolus->hide();
+        // Navigate back to the content screen
+        mainWindow->navigateToRoute(Route::CONTENT);
     });
-
-    QObject::connect(authManager, &AuthManager::authStateChanged, [=](bool authenticated) {
-        if (authenticated) {
-            mainWindow->show();
-            lockScreen->hide();
-        } else {
-            mainWindow->hide();
-            lockScreen->show();
-        }
-    });
-
-    // Add charging toggles for demo/testing purposes
-    // These would typically be connected to actual charger detection
-    // For example, you might add buttons in your UI to simulate plugging/unplugging
-
-    // Example: You could add methods to your MainWindow class:
-    // QObject::connect(mainWindow, &MainWindow::chargerConnected, [statusModel]() {
-    //     statusModel->setBatteryCharging(true);
-    // });
-    //
-    // QObject::connect(mainWindow, &MainWindow::chargerDisconnected, [statusModel]() {
-    //     statusModel->setBatteryCharging(false);
-    // });
-
-    if (authManager->isAuthenticated()) {
-        mainWindow->show();
-    } else {
-        lockScreen->show();
-    }
-
+    
+    // Show the main window
+    mainWindow->show();
+    
     return a.exec();
 }

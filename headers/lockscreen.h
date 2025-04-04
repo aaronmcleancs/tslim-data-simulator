@@ -3,7 +3,6 @@
 
 #include <QWidget>
 #include <QSettings>
-#include "statusbar.h"
 #include "authmanager.h"
 
 namespace Ui {
@@ -15,7 +14,7 @@ class LockScreen : public QWidget
     Q_OBJECT
 
 public:
-    explicit LockScreen(StatusBar* sb, QWidget *parent = nullptr);
+    explicit LockScreen(QWidget *parent = nullptr);
     ~LockScreen();
 signals:
     // Signal when unlock is successful
@@ -29,7 +28,6 @@ private slots:
 
 private:
     Ui::LockScreen *ui;
-    StatusBar *statusBar;
     AuthManager *authManager;
 
     // PIN validation

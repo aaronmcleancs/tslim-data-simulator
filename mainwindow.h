@@ -2,11 +2,20 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "headers/BolusCalculator.h"
-#include "headers/Pump.h"
+#include <QVBoxLayout>
 #include "headers/authmanager.h"
-#include "headers/QCustomPlot.h"
 #include "statusbar.h"
+#include "headers/contentwidget.h"
+#include "headers/lockscreen.h"
+
+// Enum to represent different screens in the application
+enum class Route {
+    LOCK_SCREEN,
+    CONTENT,
+    BOLUS,
+    SETTINGS
+    // Add more routes as needed
+};
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -17,43 +26,25 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow(StatusBar *sb, QWidget *parent = nullptr);
+    MainWindow(StatusBar *statusBar, QWidget *parent = nullptr);
     ~MainWindow();
 
-
-    void setupBloodSugarGraph();
-    void loadGraphData();
+    // Navigate to a specific route
+    void navigateToRoute(Route route);
 
 signals:
     void bolusShift();
 
-
 private slots:
     void onAuthStateChanged(bool authenticated);
-    void on_bolusButton_clicked();
-    void on_radioButton_clicked();
-
-    void on_calculate_clicked();
-
-    void on_radioButton_2_clicked();
-
-    void on_pushButton_clicked();
-
-    void createProfile();
-    void editProfile();
-    void selectProfile();
-    void deleteProfile();
-    
-    void updateHistoryTab();
-    void updateSettingsTab();
-    void on_tabWidget_currentChanged(int index);
-
-    void on_setting_pin_update_button_clicked();
 
 private:
     Ui::MainWindow *ui;
-    Pump *pump;
+    QVBoxLayout *routerLayout;
     StatusBar *statusBar;
-
+    LockScreen *lockScreen;
+    ContentWidget *contentWidget;
+    QWidget *currentWidget;
 };
+
 #endif // MAINWINDOW_H

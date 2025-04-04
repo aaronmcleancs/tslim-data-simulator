@@ -17,8 +17,8 @@ SOURCES += \
     cpp/Profile.cpp \
     cpp/PumpHistory.cpp \
     cpp/Pump.cpp \
-    cpp/UI.cpp \
     cpp/authmanager.cpp \
+    cpp/contentwidget.cpp \
     cpp/lockscreen.cpp \
     cpp/statusmodel.cpp \
     cpp/QCustomPlot.cpp \
@@ -34,8 +34,8 @@ HEADERS += \
     headers/Profile.h \
     headers/PumpHistory.h \
     headers/Pump.h \
-    headers/UI.h \
     headers/authmanager.h \
+    headers/contentwidget.h \
     headers/lockscreen.h \
     headers/statusmodel.h \
     headers/QCustomPlot.h \
@@ -44,6 +44,7 @@ HEADERS += \
 
 FORMS += \
     bolus.ui \
+    contentwidget.ui \
     lockscreen2.ui \
     mainwindow.ui \
     statusbar.ui
