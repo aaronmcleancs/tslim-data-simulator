@@ -26,20 +26,33 @@ MainWindow::MainWindow(StatusBar *statusBar, QWidget *parent)
     this->pump = contentWidget->getPump();
     
     bolusWidget = new bolus(nullptr);
+    powerOffWidget = new PowerOff(nullptr);
     // Connect authentication state changes
+
+    StatusModel* statusModel = StatusModel::getInstance();
+    powerStateMachine = new PowerStateMachine(statusModel);
+
     AuthManager* authManager = AuthManager::getInstance();
     connect(authManager, &AuthManager::authStateChanged, this, &MainWindow::onAuthStateChanged);
-    
+    connect(powerStateMachine, &PowerStateMachine::poweredChanged, this, &MainWindow::onPowerStateChanged);
+    connect(powerOffWidget, &PowerOff::powerOn, powerStateMachine, &PowerStateMachine::powerOn);
+
     // Connect lock screen unlock signal
     connect(contentWidget, &ContentWidget::openBolus, [this]() {
         navigateToRoute(Route::BOLUS);
     });
+    // QObject::connect(mainWindow, &MainWindow::powerOffRequested,
+        //                 powerManager, &PowerStateMachine::handlePowerOffRequest);
 
-    // Set initial screen based on authentication
-    if (authManager->isAuthenticated()) {
-        navigateToRoute(Route::CONTENT);
+
+    if (powerStateMachine->isPowered()) {
+        if (authManager->isAuthenticated()) {
+            navigateToRoute(Route::CONTENT);
+        } else {
+            navigateToRoute(Route::LOCK_SCREEN);
+        }
     } else {
-        navigateToRoute(Route::LOCK_SCREEN);
+        navigateToRoute(Route::POWER_OFF);
     }
 }
 
@@ -70,6 +83,9 @@ void MainWindow::navigateToRoute(Route route)
             // Add settings screen handling here
             break;
 
+        case Route::POWER_OFF:
+            currentWidget = powerOffWidget;
+            break;
         case Route::CONTENT:
         default:
             // Default to content if unknown route
@@ -95,13 +111,17 @@ void MainWindow::onAuthStateChanged(bool authenticated)
     }
 }
 
+void MainWindow::onPowerStateChanged(bool power) {
+    if (power) {
+        on_homeButton_clicked();
+    } else {
+        navigateToRoute(Route::POWER_OFF);
+    }
+}
+
 void MainWindow::on_homeButton_clicked()
 {
     AuthManager* authManager = AuthManager::getInstance();
-    if (authManager->isAuthenticated()) {
-        navigateToRoute(Route::CONTENT);
-    } else {
-        navigateToRoute(Route::LOCK_SCREEN);
-    }
+    onAuthStateChanged(authManager->isAuthenticated());
 }
 
