@@ -41,6 +41,9 @@ public:
     void loadGraphData();
     void setBolusState(bool b){bolusState= b;}
 
+signals:
+    void bolusShift();
+
 private slots:
     void onAuthStateChanged(bool authenticated);
 

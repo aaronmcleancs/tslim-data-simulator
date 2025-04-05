@@ -2,6 +2,7 @@
 #include "headers/Profile.h"
 #include "headers/Battery.h"
 #include "headers/contentwidget.h"
+#include "headers/BolusCalculator.h"
 #include <cstdlib>
 #include <ctime>
 #include <QTimer>
@@ -28,6 +29,10 @@ CGM::~CGM()
 void CGM::setProfile(Profile* p) {
     profile = p;
     qDebug() << "CGM: Profile set to" << (profile ? profile->getName() : "null");
+}
+
+Profile* CGM::getActiveProfie(){
+    return profile;
 }
 
 void CGM::startMonitoring() {

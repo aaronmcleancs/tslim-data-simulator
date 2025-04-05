@@ -65,16 +65,9 @@
       </widget>
      </item>
      <item row="4" column="1">
-      <widget class="QCheckBox" name="checkBox">
+      <widget class="QCheckBox" name="checkBox_2">
        <property name="text">
-        <string>extended</string>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="1">
-      <widget class="QLineEdit" name="lineEdit_3">
-       <property name="text">
-        <string>50</string>
+        <string>Extended</string>
        </property>
       </widget>
      </item>
@@ -85,10 +78,10 @@
        </property>
       </widget>
      </item>
-     <item row="6" column="1">
-      <widget class="QLineEdit" name="lineEdit_4">
+     <item row="5" column="1">
+      <widget class="QLineEdit" name="lineEdit_3">
        <property name="text">
-        <string>120</string>
+        <string>50</string>
        </property>
       </widget>
      </item>
@@ -96,6 +89,13 @@
       <widget class="QLabel" name="label_6">
        <property name="text">
         <string>Time Duration</string>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="1">
+      <widget class="QLineEdit" name="lineEdit_4">
+       <property name="text">
+        <string>120</string>
        </property>
       </widget>
      </item>
@@ -141,7 +141,7 @@
     </layout>
    </item>
    <item>
-    <widget class="QPushButton" name="InitiateBolus">
+    <widget class="QPushButton" name="pushButton">
      <property name="text">
       <string>Initiate Bolus</string>
      </property>

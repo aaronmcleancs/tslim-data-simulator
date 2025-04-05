@@ -33,12 +33,18 @@ public slots:
     void selectProfile();
     void deleteProfile();
 
+    void setBolus(bool b){bolus = b;}
+
 signals:
     void openBolus();
+
+private slots:
+    void on_pushButton_clicked();
 
 private:
     Ui::ContentWidget *ui;
     Pump *pump;
+    bool bolus = false;
 };
 
 #endif // CONTENTWIDGET_H

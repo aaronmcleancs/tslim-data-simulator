@@ -65,6 +65,10 @@ int main(int argc, char *argv[]) {
         // Navigate back to the content screen
         mainWindow->navigateToRoute(Route::CONTENT);
     });
+    QObject::connect(Bolus, &bolus::BolusInitiated, [=]() {
+        qDebug()<<"hhere";
+        statusBar->setBolus(true);
+    });
     
     // Show the main window
     mainWindow->show();

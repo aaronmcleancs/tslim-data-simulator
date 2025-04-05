@@ -501,3 +501,14 @@ void ContentWidget::on_setting_pin_update_button_clicked() {
 
     authManager->setPinCode(newPin);
 }
+
+void ContentWidget::on_pushButton_clicked()
+{
+    if(bolus){
+        qDebug()<<"Bolus Stopped...";
+        bolus = !bolus;;
+    }else{
+        qDebug()<<"Bolus is not initiated...";
+    }
+}
+

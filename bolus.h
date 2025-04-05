@@ -19,6 +19,7 @@ class bolus : public QWidget
 public:
     explicit bolus(Pump* pump, QWidget *parent = nullptr);
     ~bolus();
+    bool bolusState = false;
 
 signals:
     void mainShift();
@@ -29,8 +30,8 @@ private slots:
     void on_pushButton_2_clicked();
     void on_pushButton_3_clicked();
     void on_pushButton_4_clicked();
-    void on_pushButton_5_clicked();
-    void on_radioButton_clicked();
+
+    void on_checkBox_2_stateChanged(int arg1);
 
 private:
     Ui::bolus *ui;
@@ -40,10 +41,6 @@ private:
 //    void on_pushButton_4_clicked();
 
 //    void on_pushButton_3_clicked();
-
-    void on_checkBox_clicked();
-
-    void on_checkBox_stateChanged(int arg1);
 
 //    void on_pushButton_2_clicked();
 

@@ -9,24 +9,36 @@
 #include "headers/Pump.h"
 
 
+void BolusCalculator :: setCurrentProfile(Profile* p){
+    activeProfile  = p;;
+}
+
 
 double BolusCalculator :: Carb_Bolus_Calculation(int total_carbs){
-//    Pump p1;
-//    Profile* profile = p1.getActiveProfile();
-//    return total_carbs/profile->getCarbRatio();
-    return 5.6;
+    if(activeProfile == nullptr){
+        qDebug()<<"Current profile is not set";
+    }
+    return total_carbs/activeProfile->getCarbRatio();
+//    return 5.6;
 }
 
 double
 BolusCalculator :: Correction_Bolus_Calculation(int current_glucose){
-//    Pump p1;
-//    Profile* profile = p1.getActiveProfile();
-//    double target = (profile->getTargetGlucoseRange().first + profile->getTargetGlucoseRange().second) / 2.0;
-//    return (current_glucose - target) / profile->getCorrectionFactor();
-      return 6.4;
+
+    if(activeProfile == nullptr){
+        qDebug()<<"Current profile is not set";
+    }
+    qDebug()<<activeProfile->getCarbRatio();;
+    qDebug()<<activeProfile->getCorrectionFactor();
+    qDebug()<<activeProfile->getTargetGlucoseRange();
+    double target = (activeProfile->getTargetGlucoseRange().first + activeProfile->getTargetGlucoseRange().second) / 2.0;
+    return (current_glucose - target) / activeProfile->getCorrectionFactor();
+
+//      return 6.4;
 
 }
-double BolusCalculator::total_bolus(int total_carbs, int current_glucose) {
+double BolusCalculator::total_bolus(int total_carbs, int current_glucose,Profile* p) {
+    activeProfile = p;
     int carbBolus = Carb_Bolus_Calculation(total_carbs);
     int correctionBolus = Correction_Bolus_Calculation(current_glucose);
     double totalBolus = carbBolus + correctionBolus;

@@ -25,6 +25,8 @@ public:
     void setControlIQActive(bool active);
     bool isControlIQActive() const;
 
+    Profile* getActiveProfie();
+
 signals:
     void newGlucoseReading(double glucoseLevel); // To ControlIQ
 public slots:
