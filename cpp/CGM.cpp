@@ -96,12 +96,11 @@ void CGM::setControlIQActive(bool active) {
     qDebug() << "ControlIQ active set to:" << controlIQActive;
 }
 
-// Getter for controlIQActive
 bool CGM::isControlIQActive() const {
     return controlIQActive;
 }
 
-// IM GONNA FIX THIS TONIGHT
+// FIXED ATLAST
 void CGM::update() {
     if (!profile) {
         qDebug() << "Profile is null, glucose reading not added!";
@@ -119,7 +118,7 @@ void CGM::update() {
     double glucose = currentGlucoseLevel;
 
     // Natural rise in glucose
-    glucose += 0.3;  // Slow, modest rise per 5-second cycle.
+    glucose += 0.3;  
 
     // Apply basal insulin effect.
     // For simulation, assume each unit of basal insulin lowers glucose by 0.05 mmol/L per cycle.
@@ -157,13 +156,11 @@ void CGM::update() {
     if (insulinEffect < 0.01)
         insulinEffect = 0;
 
-    // Record the new glucose reading
     GlucoseReading newReading;
     newReading.value = glucose;
     newReading.timestamp = QDateTime::currentDateTime();
     profile->addGlucoseReading(newReading);
 
-    // Update current glucose level for next cycle.
     currentGlucoseLevel = glucose;
 }
 
