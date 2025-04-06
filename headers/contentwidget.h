@@ -34,6 +34,7 @@ public slots:
     void deleteProfile();
 
     void setBolus(bool b){bolus = b;}
+    void displayAlert(const QString &alertMessage, double bgValue); // i hate alerts if any of you read this
 
 signals:
     void openBolus();
@@ -45,6 +46,8 @@ private:
     Ui::ContentWidget *ui;
     Pump *pump;
     bool bolus = false;
+    QTimer *activeTimeTimer;
+    void updateActiveTime();
 };
 
 #endif // CONTENTWIDGET_H

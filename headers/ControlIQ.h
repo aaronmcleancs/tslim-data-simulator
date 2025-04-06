@@ -11,9 +11,6 @@ class ControlIQ : public QObject
 public:
     explicit ControlIQ(Pump* pump, QObject *parent = nullptr);
 
-    void start();
-    void stop();
-
 public slots:
     void evaluate(double glucose);
 

@@ -65,7 +65,7 @@ void bolus::on_pushButton_4_clicked()
 
 }
 
-
+// yo is this even real anymore, someone check if it's not then remove i think
 // this is the automatic button (As the ceo of controliq i approve! :D)
 void bolus::on_pushButton_3_clicked()
 {
@@ -116,7 +116,11 @@ void bolus::on_pushButton_2_clicked()
 
 void bolus::on_pushButton_clicked()
 {
-    qDebug()<<"Bolus Initiated....";
+    pump->recordBolus(totalBolus, "Manual");
+    qDebug()<<"Manual bolus Initiated....";
+    pump->recordAlert("Manual Bolus Initiated!", totalBolus * 1.0);
+
+    pump->getCGM()->applyInsulinEffect(totalBolus * 1.0);
     emit BolusInitiated();
     bolusState = true;
 

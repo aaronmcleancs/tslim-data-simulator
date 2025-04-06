@@ -3,47 +3,49 @@
 
 #include <QObject>
 #include <QTimer>
+#include <QVector>
 #include <QDateTime>
-#include <QLabel>
 #include "Profile.h"
-#include "Battery.h"
 
-class CGM : public QObject
-{
+class Battery;
+class Pump;
+class CGM : public QObject {
     Q_OBJECT
 public:
-    explicit CGM(QObject *parent = nullptr);
+    explicit CGM(Pump* pump, QObject *parent = nullptr);
     ~CGM();
 
+    void setProfile(Profile* p);
     void startMonitoring();
     void stopMonitoring();
-    void setProfile(Profile* p);
     double getCurrentGlucoseLevel() const;
     double getCurrentCarbs() const;
-    double estimateCarbs();
-    void setGlucoseLabel(QLabel *label);
+    QDateTime getStartTime() const {return startTime;};
+    void fetchLatestGlucoseReading();
     void setControlIQActive(bool active);
     bool isControlIQActive() const;
-
-    Profile* getActiveProfie();
+    void applyInsulinEffect(double effect);
+    void estimateCarbs();
 
 signals:
-    void newGlucoseReading(double glucoseLevel); // To ControlIQ
-public slots:
-    void updateGlucoseLevelFromControlIQ(double newGlucoseLevel); // From ControlIQ
+    void newGlucoseReading(double glucose);
 
-private slots:
+public slots:
     void update();
+    void updateGlucoseLevelFromControlIQ(double newGlucoseLevel);
 
 private:
+    QDateTime startTime;
+    bool CGMON;
     double currentGlucoseLevel;
     bool controlIQActive;
-    double currentCarbs;
-    QTimer *monitoringTimer;
-    Battery *battery;
-    Profile *profile;
+    QTimer* monitoringTimer;
+    Battery* battery;
+    Profile* profile;
     double controlIQNewGlucoseLevel;
-    void fetchLatestGlucoseReading();  // From profile
+    double insulinEffect;
+    double currentcarbs;
+    Pump* pump;
 };
 
-#endif
+#endif // CGM_H

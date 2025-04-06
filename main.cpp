@@ -23,20 +23,27 @@ int main(int argc, char *argv[]) {
     // Create status bar
     StatusBar* statusBar = new StatusBar(nullptr);
     MainWindow* mainWindow = new MainWindow(statusBar);
+    Pump* pump = mainWindow->getPump();
+
 
     // Get auth manager instance
     AuthManager* authManager = AuthManager::getInstance();
 
     // Monitor battery level changes
     QObject::connect(statusModel, &StatusModel::batteryLevelChanged,
-                    [](int level) {
+                    [pump](int level) {
                         qDebug() << "Battery level: " << level << "%";
 
                         // Example of how to handle low battery warnings
                         if (level <= 20 && level > 10) {
                             qDebug() << "Warning: Battery low";
+                            pump->recordAlert("Battery low", level);
+
                         } else if (level <= 10) {
                             qDebug() << "Warning: Battery critically low";
+                            pump->recordAlert("Battery critically low!", level);
+
+
                         }
                     });
 
@@ -48,7 +55,6 @@ int main(int argc, char *argv[]) {
                         // For example:
                         // statusBar->updateBatteryLevel(level);
                     });
-    Pump* pump = mainWindow->getPump();
     if(pump == nullptr){
         qDebug() << "null pump in main";
     }else{
@@ -65,6 +71,10 @@ int main(int argc, char *argv[]) {
         Bolus->hide();
         mainWindow->navigateToRoute(Route::CONTENT);
     });
+
+    QObject::connect(pump->getInsulinCartridge(),
+                     &InsulinCartridge::insulinLevelChanged,
+                     StatusBar::getInstance(), &StatusBar::onUnitsChanged);
 
     QObject::connect(Bolus, &bolus::BolusInitiated, [=]() {
         statusBar->setBolus(true);
