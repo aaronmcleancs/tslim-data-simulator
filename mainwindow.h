@@ -41,13 +41,18 @@ public:
     void loadGraphData();
     void setBolusState(bool b){bolusState= b;}
 
+    bool isPumpReady() const { return pump != nullptr; }
+
 signals:
     void bolusShift();
+    void fullyInitialized();
 
 private slots:
     void onAuthStateChanged(bool authenticated);
 
     void on_homeButton_clicked();
+
+    void completeInitialization();
 
 private:
     Ui::MainWindow *ui;

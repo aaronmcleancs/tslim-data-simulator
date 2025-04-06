@@ -16,15 +16,22 @@
 
 int main(int argc, char *argv[]) {
     QApplication a(argc, argv);
-    
+
     // Get status model instance
     StatusModel* statusModel = StatusModel::getInstance();
-    
+
+    // Create status bar
+    StatusBar* statusBar = new StatusBar(nullptr);
+    MainWindow* mainWindow = new MainWindow(statusBar);
+
+    // Get auth manager instance
+    AuthManager* authManager = AuthManager::getInstance();
+
     // Monitor battery level changes
     QObject::connect(statusModel, &StatusModel::batteryLevelChanged,
                     [](int level) {
                         qDebug() << "Battery level: " << level << "%";
-                        
+
                         // Example of how to handle low battery warnings
                         if (level <= 20 && level > 10) {
                             qDebug() << "Warning: Battery low";
@@ -32,17 +39,7 @@ int main(int argc, char *argv[]) {
                             qDebug() << "Warning: Battery critically low";
                         }
                     });
-    
-    // Create status bar
-    StatusBar* statusBar = new StatusBar(nullptr);
-    MainWindow* mainWindow = new MainWindow(statusBar);
-    
-    // Create bolus screen
-    bolus* Bolus = new bolus(mainWindow->getPump(),nullptr);
-    
-    // Get auth manager instance
-    AuthManager* authManager = AuthManager::getInstance();
-    
+
     // Connect battery level to status bar
     QObject::connect(statusModel, &StatusModel::batteryLevelChanged,
                     [statusBar](int level) {
@@ -51,25 +48,28 @@ int main(int argc, char *argv[]) {
                         // For example:
                         // statusBar->updateBatteryLevel(level);
                     });
-    
-    // Connect main window bolus signal to show bolus screen
+    Pump* pump = mainWindow->getPump();
+    if(pump == nullptr){
+        qDebug() << "null pump in main";
+    }else{
+        qDebug() << "pump created in main";
+    }
+    bolus* Bolus = new bolus(pump, nullptr);
+
+    // Set up connections
     QObject::connect(mainWindow, &MainWindow::bolusShift, [=]() {
         Bolus->show();
-        // No need to hide mainWindow now - bolus is a separate window
     });
 
-    
-    // Connect bolus screen mainShift signal to return to main window
     QObject::connect(Bolus, &bolus::mainShift, [=]() {
         Bolus->hide();
-        // Navigate back to the content screen
         mainWindow->navigateToRoute(Route::CONTENT);
     });
+
     QObject::connect(Bolus, &bolus::BolusInitiated, [=]() {
-        qDebug()<<"hhere";
         statusBar->setBolus(true);
     });
-    
+
     // Show the main window
     mainWindow->show();
     return a.exec();

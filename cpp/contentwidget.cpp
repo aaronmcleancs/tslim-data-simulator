@@ -14,6 +14,11 @@ ContentWidget::ContentWidget(QWidget *parent)
     , ui(new Ui::ContentWidget)
 {
     ui->setupUi(this);
+    pump = new Pump();
+
+    if(pump == nullptr){
+        qDebug() << "null pump in cwidget construct";
+    }
 
     QGroupBox *bolusGroupBox = findChild<QGroupBox*>("Bolus_Groupbox");
     if (bolusGroupBox) {
@@ -45,8 +50,6 @@ ContentWidget::ContentWidget(QWidget *parent)
     if (ui->bolusButton) {
         connect(ui->bolusButton, &QPushButton::clicked, this, &ContentWidget::openBolus);
     }
-
-    pump = new Pump(nullptr);
 
     QStringList profileNames = Profile::getAvailableProfiles();
     for (const QString &name : profileNames) {

@@ -8,7 +8,7 @@ MainWindow::MainWindow(StatusBar *statusBar, QWidget *parent)
     , currentWidget(nullptr)
 {
     ui->setupUi(this);
-    
+
     // Set up status bar
     this->statusBar->setParent(this);
     
@@ -24,8 +24,13 @@ MainWindow::MainWindow(StatusBar *statusBar, QWidget *parent)
     lockScreen = new LockScreen(this->statusBar);
     contentWidget = new ContentWidget();
     this->pump = contentWidget->getPump();
+
+    if(this->pump == nullptr){
+        qDebug() << "null pump in window constructor";
+    }
+
     
-    bolusWidget = new bolus(nullptr);
+    bolusWidget = new bolus(pump, nullptr);
     // Connect authentication state changes
     AuthManager* authManager = AuthManager::getInstance();
     connect(authManager, &AuthManager::authStateChanged, this, &MainWindow::onAuthStateChanged);
@@ -41,6 +46,12 @@ MainWindow::MainWindow(StatusBar *statusBar, QWidget *parent)
     } else {
         navigateToRoute(Route::LOCK_SCREEN);
     }
+    QTimer::singleShot(0, this, &MainWindow::completeInitialization);
+
+}
+
+void MainWindow::completeInitialization() {
+    emit fullyInitialized();
 }
 
 MainWindow::~MainWindow()
@@ -83,6 +94,7 @@ void MainWindow::navigateToRoute(Route route)
 }
 
 Pump* MainWindow::getPump() const {
+    Q_CHECK_PTR(pump);
     return pump;
 }
 

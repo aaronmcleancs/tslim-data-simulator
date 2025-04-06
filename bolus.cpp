@@ -30,6 +30,9 @@ bolus::bolus(Pump* pump, QWidget *parent) :
     ui->label_9->setVisible(false);
     ui->pushButton->setVisible(false);
     checked = false;
+    if(pump == nullptr){
+        qDebug() << "no pump in bolus construct";
+    }
 
 }
 
