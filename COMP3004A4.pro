@@ -21,10 +21,12 @@ SOURCES += \
     cpp/authmanager.cpp \
     cpp/contentwidget.cpp \
     cpp/lockscreen.cpp \
+    cpp/powerstatemachine.cpp \
     cpp/statusmodel.cpp \
     cpp/QCustomPlot.cpp \
     main.cpp \
     mainwindow.cpp \
+    poweroff.cpp \
     statusbar.cpp
 HEADERS += \
     bolus.h \
@@ -39,9 +41,11 @@ HEADERS += \
     headers/authmanager.h \
     headers/contentwidget.h \
     headers/lockscreen.h \
+    headers/powerstatemachine.h \
     headers/statusmodel.h \
     headers/QCustomPlot.h \
     mainwindow.h \
+    poweroff.h \
     statusbar.h
 
 FORMS += \
@@ -49,6 +53,7 @@ FORMS += \
     contentwidget.ui \
     lockscreen2.ui \
     mainwindow.ui \
+    poweroff.ui \
     statusbar.ui
 
 # Default rules for deployment.

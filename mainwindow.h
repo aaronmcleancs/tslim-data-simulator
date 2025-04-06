@@ -7,6 +7,8 @@
 #include "statusbar.h"
 #include "headers/contentwidget.h"
 #include "headers/lockscreen.h"
+#include "headers/powerstatemachine.h"
+#include "poweroff.h"
 #include "bolus.h"
 
 // Enum to represent different screens in the application
@@ -14,8 +16,8 @@ enum class Route {
     LOCK_SCREEN,
     CONTENT,
     BOLUS,
-    SETTINGS
-    // Add more routes as needed
+    SETTINGS,
+    POWER_OFF
 };
 
 QT_BEGIN_NAMESPACE
@@ -49,6 +51,7 @@ signals:
 
 private slots:
     void onAuthStateChanged(bool authenticated);
+    void onPowerStateChanged(bool power);
 
     void on_homeButton_clicked();
 
@@ -58,9 +61,11 @@ private:
     Ui::MainWindow *ui;
     QVBoxLayout *routerLayout;
     StatusBar *statusBar;
+    PowerStateMachine *powerStateMachine;
 
     LockScreen *lockScreen;
     ContentWidget *contentWidget;
+    PowerOff *powerOffWidget;
     bolus *bolusWidget;
     QWidget *currentWidget;
     Pump* pump;
