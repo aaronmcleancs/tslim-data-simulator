@@ -72,10 +72,10 @@ int main(int argc, char *argv[]) {
         mainWindow->navigateToRoute(Route::CONTENT);
     });
 
-    QObject::connect(pump->getInsulinCartridge(),
-                     &InsulinCartridge::insulinLevelChanged,
-                     StatusBar::getInstance(), &StatusBar::onUnitsChanged);
-
+    QObject::connect(pump->getInsulinCartridge(), &InsulinCartridge::insulinLevelChanged,
+                     [statusBar](int insulin) {
+                         statusBar->onUnitsChanged(insulin);
+                     });
     QObject::connect(Bolus, &bolus::BolusInitiated, [=]() {
         statusBar->setBolus(true);
     });

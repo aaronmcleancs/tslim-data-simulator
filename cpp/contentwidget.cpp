@@ -521,7 +521,7 @@ void ContentWidget::loadGraphData() {
 
     // Get the historical readings
     const QVector<GlucoseReading>& readings = pump->getActiveProfile()->getGlucoseReadings();
-    ui->label_2->setText(QString::number(readings.last().value) + " mg/dL");
+    ui->label_2->setText(QString::number(readings.last().value) + " mmol/L");
     // i just  put this here for convienience, gotta update graph so might aswell update lebell aswell
     QVector<double> xValues, yValues;
     int pointCount = 0;
