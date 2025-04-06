@@ -2,15 +2,13 @@
 #define INSULINCARTRIDGE_H
 
 #include <QObject>
-
-// Example Header File for initial repo
-// Feel free to change any of this to your implementation
-
+#include "statusbar.h"
+class Pump;
 class InsulinCartridge : public QObject
 {
     Q_OBJECT
 public:
-    explicit InsulinCartridge(QObject *parent = nullptr);
+    explicit InsulinCartridge(Pump* pump, QObject *parent = nullptr);
 
     int getRemainingInsulin() const;
     void setRemainingInsulin(int units);
@@ -19,6 +17,7 @@ signals:
     void insulinLevelChanged(int newLevel);
 
 private:
+    Pump* pump;
     int remainingInsulin;
 };
 

@@ -6,7 +6,7 @@ PowerStateMachine::PowerStateMachine(StatusModel* model, QObject *parent)
       powered(false),
       minBatteryLevel(5)
 {
-    connect(model, &StatusModel::batteryChargingChanged,
+    connect(model, &StatusModel::batteryLevelChanged,
             this, &PowerStateMachine::handleBatteryChange);
 }
 

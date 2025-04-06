@@ -6,8 +6,8 @@ Pump::Pump(QObject *parent)
     : QObject(parent), activeProfile(nullptr), battery(nullptr),
       insulinCartridge(nullptr), cgm(nullptr), pumpHistory(nullptr)
 {
-    insulinCartridge = new InsulinCartridge(this);
-    cgm = new CGM(this);
+    insulinCartridge = new InsulinCartridge(this,this);
+    cgm = new CGM(this, this);
     qDebug() << "Pump constructor: CGM initialized"; // Using this purely for debug purposes
 }
 

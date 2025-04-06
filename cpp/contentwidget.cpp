@@ -8,6 +8,8 @@
 #include <QTableWidget>
 #include <QTableWidgetItem>
 #include "headers/authmanager.h"
+#include "headers/optionswindow.h"
+
 
 ContentWidget::ContentWidget(QWidget *parent)
     : QWidget(parent)
@@ -50,6 +52,7 @@ ContentWidget::ContentWidget(QWidget *parent)
     if (ui->bolusButton) {
         connect(ui->bolusButton, &QPushButton::clicked, this, &ContentWidget::openBolus);
     }
+
 
     QStringList profileNames = Profile::getAvailableProfiles();
     for (const QString &name : profileNames) {
@@ -98,12 +101,23 @@ ContentWidget::ContentWidget(QWidget *parent)
             }
         }
     }
+    if (pump) {
+        connect(pump, &Pump::alertTriggered, this, &ContentWidget::displayAlert);
+    }
 
     connect(ui->profile_create_button, SIGNAL(released()), this, SLOT(on_createProfileButton_clicked()));
 
     setupBloodSugarGraph();
     loadGraphData();
     connect(pump->getActiveProfile(), &Profile::glucoseReadingAdded, this, &ContentWidget::loadGraphData);
+    activeTimeTimer = new QTimer(this);
+    activeTimeTimer->setInterval(1000);
+    connect(activeTimeTimer, &QTimer::timeout, this, &ContentWidget::updateActiveTime);
+    activeTimeTimer->start();
+    connect(pump->getInsulinCartridge(), &InsulinCartridge::insulinLevelChanged,
+            this, [this](int level) {
+                ui->iobValue->setText(QString::number(level) + " U");
+            });
 
 }
 
@@ -111,6 +125,44 @@ ContentWidget::~ContentWidget()
 {
     delete ui;
 }
+
+void ContentWidget::on_optionsButton_clicked()
+{
+    OptionsWindow options(pump, this);
+    options.exec();
+}
+
+void ContentWidget::displayAlert(const QString &alertMessage, double bgValue)
+{
+    QString timeStamp = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
+
+    QString fullAlert = alertMessage + " (BG: " + QString::number(bgValue) + ")";
+
+    int rowCount = ui->alertsTable->rowCount();
+    ui->alertsTable->insertRow(rowCount);
+
+    QTableWidgetItem *alertItem = new QTableWidgetItem(fullAlert);
+    QTableWidgetItem *timeItem = new QTableWidgetItem(timeStamp);
+
+    alertItem->setFlags(alertItem->flags() & ~Qt::ItemIsEditable);
+    timeItem->setFlags(timeItem->flags() & ~Qt::ItemIsEditable);
+
+    ui->alertsTable->setItem(rowCount, 0, alertItem);
+    ui->alertsTable->setItem(rowCount, 1, timeItem);
+
+    ui->alertsTable->scrollToItem(timeItem);
+}
+
+
+void ContentWidget::updateActiveTime() {
+    if (pump && pump->getCGM() && pump->getCGM()->getStartTime().isValid()) {
+        qint64 secondsElapsed = pump->getCGM()->getStartTime().secsTo(QDateTime::currentDateTime());
+        QTime timeElapsed(0,0);
+        timeElapsed = timeElapsed.addSecs(secondsElapsed);
+        ui->activeTime->setText(timeElapsed.toString("hh:mm:ss"));
+    }
+}
+
 
 Pump* ContentWidget::getPump() const {
     return pump;
@@ -395,7 +447,8 @@ void ContentWidget::loadGraphData() {
 
     // Get the historical readings
     const QVector<GlucoseReading>& readings = pump->getActiveProfile()->getGlucoseReadings();
-    ui->label_2->setText(QString::number(readings.last().value)); // i just  put this here for convienience, gotta update graph so might aswell update lebell aswell
+    ui->label_2->setText(QString::number(readings.last().value) + " mmol/L");
+    // i just  put this here for convienience, gotta update graph so might aswell update lebell aswell
     QVector<double> xValues, yValues;
     int pointCount = 0;
 
@@ -422,13 +475,8 @@ void ContentWidget::on_setting_pin_update_button_clicked() {
     authManager->setPinCode(newPin);
 }
 
-void ContentWidget::on_pushButton_clicked()
+void ContentWidget::on_cancelBolus_clicked()
 {
-    if(bolus){
-        qDebug()<<"Bolus Stopped...";
-        bolus = !bolus;;
-    }else{
-        qDebug()<<"Bolus is not initiated...";
-    }
+    qDebug() << "Cancel Bolus button pressed.";
+    emit cancelBolusRequested();
 }
-

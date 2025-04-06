@@ -25,7 +25,7 @@ MainWindow::MainWindow(StatusBar *statusBar, QWidget *parent)
     contentWidget = new ContentWidget();
     this->pump = contentWidget->getPump();
     
-    bolusWidget = new bolus(pump, nullptr);
+    bolusWidget = new bolus(pump, contentWidget ,nullptr);
     powerOffWidget = new PowerOff(nullptr);
     // Connect authentication state changes
 
@@ -59,6 +59,9 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+bolus* MainWindow::getBolus() const{
+    return bolusWidget;
+}
 void MainWindow::navigateToRoute(Route route)
 {
     // Remove current widget from layout if it exists
@@ -116,6 +119,10 @@ void MainWindow::onPowerStateChanged(bool power) {
     } else {
         navigateToRoute(Route::POWER_OFF);
     }
+}
+
+ContentWidget* MainWindow::getContentWidget() const{
+    return contentWidget;
 }
 
 void MainWindow::on_homeButton_clicked()
