@@ -161,7 +161,7 @@
         </size>
        </property>
        <property name="currentIndex">
-        <number>4</number>
+        <number>1</number>
        </property>
        <widget class="QWidget" name="tab">
         <property name="minimumSize">
@@ -176,9 +176,6 @@
         <layout class="QVBoxLayout" name="verticalLayout_2">
          <item>
           <widget class="QTextEdit" name="historyTextEdit">
-           <property name="readOnly">
-            <bool>true</bool>
-           </property>
            <property name="font">
             <font>
              <family>Courier New</family>
@@ -187,6 +184,9 @@
            </property>
            <property name="styleSheet">
             <string notr="true">background-color: #000000; color: #00FF00;</string>
+           </property>
+           <property name="readOnly">
+            <bool>true</bool>
            </property>
           </widget>
          </item>
@@ -201,8 +201,8 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>781</width>
-           <height>261</height>
+           <width>751</width>
+           <height>231</height>
           </rect>
          </property>
         </widget>
