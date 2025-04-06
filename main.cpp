@@ -60,7 +60,7 @@ int main(int argc, char *argv[]) {
     }else{
         qDebug() << "pump created in main";
     }
-    bolus* Bolus = new bolus(pump, nullptr);
+    bolus* Bolus = mainWindow->getBolus();
 
     // Set up connections
     QObject::connect(mainWindow, &MainWindow::bolusShift, [=]() {

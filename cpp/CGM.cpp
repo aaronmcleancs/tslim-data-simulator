@@ -125,6 +125,7 @@ void CGM::update() {
     // For simulation, assume each unit of basal insulin lowers glucose by 0.05 mmol/L per cycle.
     if (pump && pump->getActiveProfile()) {
         double basal = pump->getActiveProfile()->getBasalRate();
+        qDebug() << basal;
         double basalEffect = basal * 0.05;
         glucose -= basalEffect;
 

@@ -153,7 +153,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="pushButton">
+        <widget class="QPushButton" name="cancelBolus">
          <property name="maximumSize">
           <size>
            <width>50</width>
@@ -189,7 +189,7 @@
         </size>
        </property>
        <property name="currentIndex">
-        <number>2</number>
+        <number>3</number>
        </property>
        <widget class="QWidget" name="tab">
         <property name="minimumSize">

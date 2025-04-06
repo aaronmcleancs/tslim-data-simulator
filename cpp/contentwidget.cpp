@@ -8,6 +8,8 @@
 #include <QTableWidget>
 #include <QTableWidgetItem>
 #include "headers/authmanager.h"
+#include "headers/optionswindow.h"
+
 
 ContentWidget::ContentWidget(QWidget *parent)
     : QWidget(parent)
@@ -50,6 +52,7 @@ ContentWidget::ContentWidget(QWidget *parent)
     if (ui->bolusButton) {
         connect(ui->bolusButton, &QPushButton::clicked, this, &ContentWidget::openBolus);
     }
+
 
     QStringList profileNames = Profile::getAvailableProfiles();
     for (const QString &name : profileNames) {
@@ -121,6 +124,12 @@ ContentWidget::ContentWidget(QWidget *parent)
 ContentWidget::~ContentWidget()
 {
     delete ui;
+}
+
+void ContentWidget::on_optionsButton_clicked()
+{
+    OptionsWindow options(pump, this);
+    options.exec();
 }
 
 void ContentWidget::displayAlert(const QString &alertMessage, double bgValue)
@@ -549,13 +558,8 @@ void ContentWidget::on_setting_pin_update_button_clicked() {
     authManager->setPinCode(newPin);
 }
 
-void ContentWidget::on_pushButton_clicked()
+void ContentWidget::on_cancelBolus_clicked()
 {
-    if(bolus){
-        qDebug()<<"Bolus Stopped...";
-        bolus = !bolus;;
-    }else{
-        qDebug()<<"Bolus is not initiated...";
-    }
+    qDebug() << "Cancel Bolus button pressed.";
+    emit cancelBolusRequested();
 }
-

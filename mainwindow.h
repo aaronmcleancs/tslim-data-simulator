@@ -36,6 +36,8 @@ public:
     // Navigate to a specific route
     void navigateToRoute(Route route);
     Pump* getPump() const;
+    ContentWidget* getContentWidget() const;
+    bolus* getBolus() const;
 
 
 

@@ -2,11 +2,13 @@
 #include "ui_bolus.h"
 #include "headers/CGM.h"
 #include "headers/BolusCalculator.h"
+#include "mainwindow.h"
 
-bolus::bolus(Pump* pump, QWidget *parent) :
+bolus::bolus(Pump* pump,ContentWidget* contentWidget, QWidget *parent) :
     //QDialog(parent),
     ui(new Ui::bolus),
-    pump(pump)
+    pump(pump),
+    contentWidget(contentWidget)
 
 {
     ui->setupUi(this);
@@ -33,6 +35,8 @@ bolus::bolus(Pump* pump, QWidget *parent) :
     if(pump == nullptr){
         qDebug() << "no pump in bolus construct";
     }
+    connect(contentWidget, &ContentWidget::cancelBolusRequested, this, &bolus::cancelBolus);
+
 
 }
 
@@ -66,7 +70,7 @@ void bolus::on_pushButton_4_clicked()
 }
 
 // yo is this even real anymore, someone check if it's not then remove i think
-// this is the automatic button (As the ceo of controliq i approve! :D)
+// i take this back i hate this button------- this is the automatic button (As the ceo of controliq i approve! :D)
 void bolus::on_pushButton_3_clicked()
 {
     ui->pushButton_2->setDisabled(true);
@@ -176,3 +180,18 @@ void bolus::on_checkBox_2_stateChanged(int arg1)
 
 }
 
+void bolus::cancelBolus() {
+    qDebug() << "cancelBolus() triggered. Current state: bolusState=" << bolusState
+             << ", totalBolus=" << totalBolus;
+
+    if (bolusState && totalBolus > 0.0) {
+        pump->getCGM()->applyInsulinEffect(-totalBolus);
+        pump->recordAlert("Bolus Canceled!", totalBolus);
+        qDebug() << "Bolus successfully canceled. Units canceled:" << totalBolus;
+
+        totalBolus = 0.0;
+        bolusState = false;
+    } else {
+        qDebug() << "No active bolus found or totalBolus is zero!";
+    }
+}
