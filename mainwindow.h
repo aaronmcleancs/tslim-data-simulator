@@ -55,8 +55,6 @@ private slots:
 
     void on_homeButton_clicked();
 
-    void completeInitialization();
-
 private:
     Ui::MainWindow *ui;
     QVBoxLayout *routerLayout;
