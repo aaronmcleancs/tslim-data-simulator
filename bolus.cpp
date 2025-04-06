@@ -60,7 +60,7 @@ void bolus::on_pushButton_4_clicked()
     ui->label_8->setVisible(true);
     ui->label_4->setVisible(true);
     BolusCalculator b1;
-    totalBolus = b1.total_bolus(ui->lineEdit->text().toInt(), ui->lineEdit_2->text().toInt(),pump->getActiveProfile()   );
+    totalBolus = b1.total_bolus(ui->lineEdit->text().toInt(), ui->lineEdit_2->text().toInt(),pump->getActiveProfile(),pump->getInsulinCartridge()   );
     ui->label_4->setText(QString :: number(totalBolus,'g',5));
     ui->checkBox_2->setVisible(true);
     ui->pushButton->setVisible(true);
@@ -112,6 +112,7 @@ void bolus::on_pushButton_2_clicked()
     ui->checkBox_2->setEnabled(true);
     ui->label_9->setText(QString :: number(delivery,'g',5));
     ui->label_11->setText(QString :: number(totalBolus - delivery,'g',5));
+    ui->pushButton->setEnabled(true);
 
 }
 
@@ -166,6 +167,7 @@ void bolus::on_checkBox_2_stateChanged(int arg1)
             ui->lineEdit_3->setVisible(true);
             ui->lineEdit_4->setVisible(true);
             ui->pushButton_2->setVisible(true);
+            ui->pushButton->setEnabled(false);
             checked = !checked;
         }else{
 
@@ -174,7 +176,12 @@ void bolus::on_checkBox_2_stateChanged(int arg1)
             ui->lineEdit_3->setVisible(false);
             ui->lineEdit_4->setVisible(false);
             ui->pushButton_2->setVisible(false);
-            checked = !checked;
+            ui->label_7->setVisible(false);
+            ui->label_9->setVisible(false);
+            ui->label_10->setVisible(false);
+            ui->label_11->setVisible(false);
+            ui->pushButton->setEnabled(true);
+
         }
 
 
