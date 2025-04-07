@@ -40,6 +40,7 @@ private:
     ContentWidget* contentWidget;
 
     void on_InitiateBolus_clicked();
+    void setLayout();
     double totalBolus;
     bool checked = false;
 

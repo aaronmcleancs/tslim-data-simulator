@@ -5,32 +5,14 @@
 #include "mainwindow.h"
 
 bolus::bolus(Pump* pump,ContentWidget* contentWidget, QWidget *parent) :
-    //QDialog(parent),
     ui(new Ui::bolus),
     pump(pump),
     contentWidget(contentWidget)
 
 {
     ui->setupUi(this);
-    //ui->groupBox->setVisible(false);
-    //ui->groupBox_2->setVisible(false);
-    //ui->radioButton->setVisible(false);
-    //ui->radioButton_2->setVisible(false);
-    //ui->groupBox_3->setVisible(false);
-    ui->label_8->setVisible(false);
-    ui->label_4->setVisible(false);
-    ui->label_5->setVisible(false);
-    ui->label_6->setVisible(false);
-    ui->label_8->setVisible(false);
-    ui->checkBox_2->setVisible(false);
-    ui->lineEdit_3->setVisible(false);
-    ui->lineEdit_4->setVisible(false);
-    ui->pushButton_2->setVisible(false);
-    ui->label_10->setVisible(false);
-    ui->label_11->setVisible(false);
-    ui->label_7->setVisible(false);
-    ui->label_9->setVisible(false);
-    ui->pushButton->setVisible(false);
+    //initial ui setups
+    setLayout();
     checked = false;
     if(pump == nullptr){
         qDebug() << "no pump in bolus construct";
@@ -46,7 +28,26 @@ bolus::~bolus()
 }
 
 
+//initial layout setup for the ui.
+void bolus :: setLayout(){
+    ui->label_8->setVisible(false);
+    ui->label_4->setVisible(false);
+    ui->label_5->setVisible(false);
+    ui->label_6->setVisible(false);
+    ui->label_8->setVisible(false);
+    ui->checkBox_2->setVisible(false);
+    ui->lineEdit_3->setVisible(false);
+    ui->lineEdit_4->setVisible(false);
+    ui->pushButton_2->setVisible(false);
+    ui->label_10->setVisible(false);
+    ui->label_11->setVisible(false);
+    ui->label_7->setVisible(false);
+    ui->label_9->setVisible(false);
+    ui->pushButton->setVisible(false);
+    ui->checkBox->setEnabled(false);
+}
 
+//procedure to be followed when bolus is calculated.
 void bolus::on_pushButton_4_clicked()
 {
     if (!pump) {
@@ -61,20 +62,27 @@ void bolus::on_pushButton_4_clicked()
     ui->label_4->setVisible(true);
     BolusCalculator b1;
     totalBolus = b1.total_bolus(ui->lineEdit->text().toInt(), ui->lineEdit_2->text().toInt(),pump->getActiveProfile(),pump->getInsulinCartridge()   );
-    ui->label_4->setText(QString :: number(totalBolus,'g',5));
-    ui->checkBox_2->setVisible(true);
-    ui->pushButton->setVisible(true);
-    //ui->radioButton->setVisible(true);
-   // ui->radioButton_2->setVisible(true);
+    if(totalBolus>0){
+
+        ui->label_4->setText(QString :: number(totalBolus,'g',5));
+        ui->checkBox_2->setVisible(true);
+        ui->pushButton->setVisible(true);
+        if(totalBolus < pump->getActiveProfile()->getTargetGlucoseRange().first)
+            ui->checkBox->setEnabled(true);
+    }else{
+        ui->label_4->setText("No Bolus Required");
+
+    }
 
 }
 
 // yo is this even real anymore, someone check if it's not then remove i think
 // i take this back i hate this button------- this is the automatic button (As the ceo of controliq i approve! :D)
+
+//Procedure to be followed when glucose autopopulation is  requested.
 void bolus::on_pushButton_3_clicked()
 {
-    ui->pushButton_2->setDisabled(true);
-    //ui->groupBox_2->setVisible(true);
+
 
     if (!pump) {
         qDebug() << "Pump is not initialized!";
@@ -87,10 +95,10 @@ void bolus::on_pushButton_3_clicked()
         return;
     }
 
-    double carbs = cgm->getCurrentCarbs();
+
     double glucose = cgm->getCurrentGlucoseLevel();
-    ui->label_6->setText(QString::number(carbs));
-    ui->label_7->setText(QString::number(glucose));
+
+    ui->lineEdit_2->setText(QString::number(glucose));
 
     qDebug() << "Automatic mode.....";
     cgm->setControlIQActive(true);
@@ -100,7 +108,7 @@ void bolus::on_pushButton_3_clicked()
 
 
 
-
+//Displays the appropriate bolus information at delivery
 void bolus::on_pushButton_2_clicked()
 {
     double delivery = (totalBolus * ui->lineEdit_3->text().toInt())/100;
@@ -118,7 +126,7 @@ void bolus::on_pushButton_2_clicked()
 
 
 
-
+//Procedure when the bolus is initiated
 void bolus::on_pushButton_clicked()
 {
     pump->recordBolus(totalBolus, "Manual");
@@ -129,34 +137,13 @@ void bolus::on_pushButton_clicked()
     emit BolusInitiated();
     bolusState = true;
 
-    ui->label_8->setVisible(false);
-    ui->label_4->setVisible(false);
-    ui->label_5->setVisible(false);
-    ui->label_6->setVisible(false);
-    ui->label_8->setVisible(false);
-    ui->checkBox_2->setVisible(false);
-    ui->checkBox_2->setCheckState(Qt::Unchecked);
-    ui->lineEdit_3->setVisible(false);
-    ui->lineEdit_4->setVisible(false);
-    ui->pushButton_2->setVisible(false);
-    ui->label_10->setVisible(false);
-    ui->label_11->setVisible(false);
-    ui->label_7->setVisible(false);
-    ui->label_9->setVisible(false);
-    ui->pushButton->setVisible(false);
+    setLayout();
     checked = false;
     emit mainShift();
 
 }
 
-
-void bolus::on_InitiateBolus_clicked()
-{
-
-}
-
-
-
+//Checks and determines the state of the bolus either extended or quick
 void bolus::on_checkBox_2_stateChanged(int arg1)
 {
 
@@ -187,6 +174,8 @@ void bolus::on_checkBox_2_stateChanged(int arg1)
 
 }
 
+
+//Procedure to be followed when cancel is triggered in the contentwidget.
 void bolus::cancelBolus() {
     qDebug() << "cancelBolus() triggered. Current state: bolusState=" << bolusState
              << ", totalBolus=" << totalBolus;
