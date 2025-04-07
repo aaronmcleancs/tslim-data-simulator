@@ -51,7 +51,6 @@ public:
 
 signals:
     void bolusShift();
-    void fullyInitialized();
 
 private slots:
     void onAuthStateChanged(bool authenticated);
