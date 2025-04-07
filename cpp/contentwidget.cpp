@@ -233,7 +233,10 @@ void ContentWidget::editProfile(){
     QString name = ui->edit_profile_name_box->toPlainText().trimmed();
     QString setting = ui->edit_profile_setting_box->currentText();
     double value = ui->edit_val_box->value();
+    qDebug() << "updating" << name << "setting:" << setting << "value:" << value;
     pump->updateProfile(name, setting, value);
+
+    updateSettingsTab();
 }
 
 void ContentWidget::selectProfile(){

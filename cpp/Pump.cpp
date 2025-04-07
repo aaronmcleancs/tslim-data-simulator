@@ -102,27 +102,26 @@ void Pump::updateProfile(QString name, QString setting, double val){
         qDebug("no profile found matching that name (edit)");
         return;
     }
+
     
     QString oldValue = "0.0";
-    
-    if(setting == "basal rate"){
+    if(setting == "BR"){
         oldValue = QString::number(profiles[index]->getBasalRate());
         profiles[index]->setBasalRate(val);
-        
         if (pumpHistory && activeProfile && activeProfile->getName() == name) {
             recordBasalRateChange(val);
         }
-    }else if(setting == "carb ratio"){
+    }else if(setting == "CR"){
         oldValue = QString::number(profiles[index]->getCarbRatio());
         profiles[index]->setCarbRatio(val);
-    }else if(setting == "correction factor"){
+    }else if(setting == "CF"){
         oldValue = QString::number(profiles[index]->getCorrectionFactor());
         profiles[index]->setCorrectionFactor(val);
-    }else if(setting == "target min"){
+    }else if(setting == "Target Min"){
         oldValue = QString::number(profiles[index]->getTargetGlucoseRange().first);
         double max = profiles[index]->getTargetGlucoseRange().second;
         profiles[index]->setTargetGlucoseRange(val, max);
-    }else if(setting == "target max"){
+    }else if(setting == "Target Max"){
         oldValue = QString::number(profiles[index]->getTargetGlucoseRange().second);
         double min = profiles[index]->getTargetGlucoseRange().first;
         profiles[index]->setTargetGlucoseRange(min, val);
@@ -135,7 +134,7 @@ void Pump::updateProfile(QString name, QString setting, double val){
     if (pumpHistory && activeProfile && activeProfile->getName() == name) {
         recordSettingChange(setting, oldValue, QString::number(val));
     }
-
+    qDebug() << "name" << profiles[index]->getName() << "br:" << profiles[index]->getBasalRate() << "cr:" << profiles[index]->getCarbRatio() << "cf" << profiles[index]->getCorrectionFactor();
     updateSettings();
 }
 

@@ -97,6 +97,9 @@
         </item>
         <item>
          <spacer name="horizontalSpacer_2">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
           <property name="sizeHint" stdset="0">
            <size>
             <width>40</width>
@@ -177,7 +180,7 @@
         </size>
        </property>
        <property name="currentIndex">
-        <number>2</number>
+        <number>3</number>
        </property>
        <widget class="QWidget" name="tab">
         <property name="minimumSize">
@@ -192,9 +195,6 @@
         <layout class="QVBoxLayout" name="verticalLayout_2">
          <item>
           <widget class="QTextEdit" name="historyTextEdit">
-           <property name="readOnly">
-            <bool>true</bool>
-           </property>
            <property name="font">
             <font>
              <family>Courier New</family>
@@ -203,6 +203,9 @@
            </property>
            <property name="styleSheet">
             <string notr="true">background-color: #000000; color: #00FF00;</string>
+           </property>
+           <property name="readOnly">
+            <bool>true</bool>
            </property>
           </widget>
          </item>
