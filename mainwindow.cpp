@@ -23,8 +23,9 @@ MainWindow::MainWindow(StatusBar *statusBar, QWidget *parent)
     // Initialize screens
     lockScreen = new LockScreen(this->statusBar);
     contentWidget = new ContentWidget();
-    this->pump = contentWidget->getPump();
-    
+    pump = contentWidget->getPump();
+    optionsWidget = new OptionsWindow(pump, nullptr);
+
     bolusWidget = new bolus(pump, contentWidget ,nullptr);
     powerOffWidget = new PowerOff(nullptr);
     // Connect authentication state changes
@@ -36,10 +37,14 @@ MainWindow::MainWindow(StatusBar *statusBar, QWidget *parent)
     connect(authManager, &AuthManager::authStateChanged, this, &MainWindow::onAuthStateChanged);
     connect(powerStateMachine, &PowerStateMachine::poweredChanged, this, &MainWindow::onPowerStateChanged);
     connect(powerOffWidget, &PowerOff::powerOn, powerStateMachine, &PowerStateMachine::powerOn);
+    connect(optionsWidget, &OptionsWindow::powerOff, this, &MainWindow::handlePowerOff);
 
     // Connect lock screen unlock signal
     connect(contentWidget, &ContentWidget::openBolus, [this]() {
         navigateToRoute(Route::BOLUS);
+    });
+    connect(contentWidget, &ContentWidget::openOptions, [this]() {
+        navigateToRoute(Route::OPTIONS);
     });
     // QObject::connect(mainWindow, &MainWindow::powerOffRequested,
         //                 powerManager, &PowerStateMachine::handlePowerOffRequest);
@@ -74,8 +79,13 @@ void MainWindow::navigateToRoute(Route route)
     switch (route) {
         case Route::LOCK_SCREEN:
             currentWidget = lockScreen;
+            lockScreen->clearPin();
             break;
-            
+
+        case Route::OPTIONS:
+            currentWidget = optionsWidget;
+        break;
+
         case Route::BOLUS:
             currentWidget = bolusWidget;
             break;
@@ -131,3 +141,9 @@ void MainWindow::on_homeButton_clicked()
     onAuthStateChanged(authManager->isAuthenticated());
 }
 
+void MainWindow::handlePowerOff()
+{
+    AuthManager* authManager = AuthManager::getInstance();
+    authManager->setAuthenticated(false);
+    powerStateMachine->powerOff();
+}

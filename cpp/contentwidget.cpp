@@ -52,6 +52,9 @@ ContentWidget::ContentWidget(QWidget *parent)
     if (ui->bolusButton) {
         connect(ui->bolusButton, &QPushButton::clicked, this, &ContentWidget::openBolus);
     }
+    if (ui->optionsButton) {
+        connect(ui->optionsButton, &QPushButton::clicked, this, &ContentWidget::openOptions);
+    }
 
 
     QStringList profileNames = Profile::getAvailableProfiles();
@@ -128,8 +131,7 @@ ContentWidget::~ContentWidget()
 
 void ContentWidget::on_optionsButton_clicked()
 {
-    OptionsWindow options(pump, this);
-    options.exec();
+    qDebug() << "Navigate to the options";
 }
 
 void ContentWidget::displayAlert(const QString &alertMessage, double bgValue)
@@ -233,16 +235,18 @@ void ContentWidget::selectProfile(){
 }
 
 void ContentWidget::updateHistoryTab() {
-    ui->historyTextEdit->clear();
-    
+    ui->historyTable->clearContents();
+    ui->historyTable->setRowCount(0);
+
     Profile* activeProfile = pump->getActiveProfile();
     if (!activeProfile) {
         return;
     }
 
+
+
     QVector<GlucoseReading> glucoseReadings = activeProfile->getGlucoseReadings();
     QVector<InsulinDose> insulinDoses = activeProfile->getInsulinDoses();
-
     PumpHistory* pumpHistory = pump->getPumpHistory();
     QVector<BasalRateEvent> basalEvents;
     QVector<BolusEvent> bolusEvents;
@@ -258,93 +262,283 @@ void ContentWidget::updateHistoryTab() {
         statusEvents = pumpHistory->getStatusEvents();
     }
 
-    // Create a multimap to sort all events by timestamp (newest first)
-    QMultiMap<QDateTime, QString> sortedEvents;
-    
-    // Format and add glucose readings
+    int totalRows = glucoseReadings.size() + insulinDoses.size() +
+                    basalEvents.size() + bolusEvents.size() +
+                    alertEvents.size() + settingEvents.size() +
+                    statusEvents.size();
+
+    ui->historyTable->setRowCount(totalRows);
+
+    int currentRow = 0;
     for (const GlucoseReading &reading : glucoseReadings) {
-        QString eventText = QString("[%1] GLUCOSE: %2 mmol/L (CGM Reading)")
-                             .arg(reading.timestamp.toString("yyyy-MM-dd hh:mm:ss"))
-                             .arg(reading.value);
-        sortedEvents.insert(reading.timestamp, eventText);
+        QTableWidgetItem *dateTimeItem = new QTableWidgetItem(reading.timestamp.toString("yyyy-MM-dd hh:mm"));
+        QTableWidgetItem *typeItem = new QTableWidgetItem("Glucose");
+        QTableWidgetItem *valueItem = new QTableWidgetItem(QString::number(reading.value) + " mmol/L");
+        QTableWidgetItem *detailsItem = new QTableWidgetItem("CGM Reading");
+
+        dateTimeItem->setFlags(dateTimeItem->flags() & ~Qt::ItemIsEditable);
+        typeItem->setFlags(typeItem->flags() & ~Qt::ItemIsEditable);
+        valueItem->setFlags(valueItem->flags() & ~Qt::ItemIsEditable);
+        detailsItem->setFlags(detailsItem->flags() & ~Qt::ItemIsEditable);
+
+        ui->historyTable->setItem(currentRow, 0, dateTimeItem);
+        ui->historyTable->setItem(currentRow, 1, typeItem);
+        ui->historyTable->setItem(currentRow, 2, valueItem);
+        ui->historyTable->setItem(currentRow, 3, detailsItem);
+
+        currentRow++;
     }
-    
-    // Format and add insulin doses
+
     for (const InsulinDose &dose : insulinDoses) {
-        QString eventText = QString("[%1] INSULIN: %2 U (%3)")
-                             .arg(dose.timestamp.toString("yyyy-MM-dd hh:mm:ss"))
-                             .arg(dose.amount)
-                             .arg(dose.type);
-        sortedEvents.insert(dose.timestamp, eventText);
+        QTableWidgetItem *dateTimeItem = new QTableWidgetItem(dose.timestamp.toString("yyyy-MM-dd hh:mm"));
+        QTableWidgetItem *typeItem = new QTableWidgetItem("Insulin");
+        QTableWidgetItem *valueItem = new QTableWidgetItem(QString::number(dose.amount) + " U");
+        QTableWidgetItem *detailsItem = new QTableWidgetItem(dose.type);
+
+        dateTimeItem->setFlags(dateTimeItem->flags() & ~Qt::ItemIsEditable);
+        typeItem->setFlags(typeItem->flags() & ~Qt::ItemIsEditable);
+        valueItem->setFlags(valueItem->flags() & ~Qt::ItemIsEditable);
+        detailsItem->setFlags(detailsItem->flags() & ~Qt::ItemIsEditable);
+
+        ui->historyTable->setItem(currentRow, 0, dateTimeItem);
+        ui->historyTable->setItem(currentRow, 1, typeItem);
+        ui->historyTable->setItem(currentRow, 2, valueItem);
+
+        ui->historyTable->setItem(currentRow, 3, detailsItem);
+
+        currentRow++;
     }
-    
-    // Format and add basal rate events
+
+
     for (const BasalRateEvent &event : basalEvents) {
-        QString eventText = QString("[%1] BASAL: %2 U/hr (Basal Rate Change)")
-                             .arg(event.timestamp.toString("yyyy-MM-dd hh:mm:ss"))
-                             .arg(event.rate);
-        sortedEvents.insert(event.timestamp, eventText);
+        QTableWidgetItem *dateTimeItem = new QTableWidgetItem(event.timestamp.toString("yyyy-MM-dd hh:mm"));
+
+        QTableWidgetItem *typeItem = new QTableWidgetItem("Basal");
+
+        QTableWidgetItem *valueItem = new QTableWidgetItem(QString::number(event.rate) + " U/hr");
+
+        QTableWidgetItem *detailsItem = new QTableWidgetItem("Basal Rate Change");
+
+
+
+        dateTimeItem->setFlags(dateTimeItem->flags() & ~Qt::ItemIsEditable);
+
+        typeItem->setFlags(typeItem->flags() & ~Qt::ItemIsEditable);
+
+        valueItem->setFlags(valueItem->flags() & ~Qt::ItemIsEditable);
+
+        detailsItem->setFlags(detailsItem->flags() & ~Qt::ItemIsEditable);
+
+
+
+        ui->historyTable->setItem(currentRow, 0, dateTimeItem);
+
+        ui->historyTable->setItem(currentRow, 1, typeItem);
+
+        ui->historyTable->setItem(currentRow, 2, valueItem);
+
+        ui->historyTable->setItem(currentRow, 3, detailsItem);
+
+
+
+        currentRow++;
+
     }
-    
-    // Format and add bolus events
+
+
+
     for (const BolusEvent &event : bolusEvents) {
+
+        QTableWidgetItem *dateTimeItem = new QTableWidgetItem(event.timestamp.toString("yyyy-MM-dd hh:mm"));
+
+        QTableWidgetItem *typeItem = new QTableWidgetItem("Bolus");
+
+        QTableWidgetItem *valueItem = new QTableWidgetItem(QString::number(event.amount) + " U");
+
+
+
         QString details = event.bolusType;
+
         if (event.duration > 0) {
-            details += QString(", %1 min").arg(event.duration);
+
+            details += ", " + QString::number(event.duration) + " min";
+
         }
+
         if (event.carbInput > 0) {
-            details += QString(", %1 g carbs").arg(event.carbInput);
+
+            details += ", " + QString::number(event.carbInput) + " g carbs";
+
         }
+
         if (event.bgInput > 0) {
-            details += QString(", BG: %1 mmol/L").arg(event.bgInput);
+
+            details += ", BG: " + QString::number(event.bgInput) + " mmol/L";
+
         }
-        
-        QString eventText = QString("[%1] BOLUS: %2 U (%3)")
-                             .arg(event.timestamp.toString("yyyy-MM-dd hh:mm:ss"))
-                             .arg(event.amount)
-                             .arg(details);
-        sortedEvents.insert(event.timestamp, eventText);
+
+
+
+        QTableWidgetItem *detailsItem = new QTableWidgetItem(details);
+
+
+
+        dateTimeItem->setFlags(dateTimeItem->flags() & ~Qt::ItemIsEditable);
+
+        typeItem->setFlags(typeItem->flags() & ~Qt::ItemIsEditable);
+
+        valueItem->setFlags(valueItem->flags() & ~Qt::ItemIsEditable);
+
+        detailsItem->setFlags(detailsItem->flags() & ~Qt::ItemIsEditable);
+
+
+
+        ui->historyTable->setItem(currentRow, 0, dateTimeItem);
+
+        ui->historyTable->setItem(currentRow, 1, typeItem);
+
+        ui->historyTable->setItem(currentRow, 2, valueItem);
+
+        ui->historyTable->setItem(currentRow, 3, detailsItem);
+
+
+
+        currentRow++;
+
     }
-    
-    // Format and add alert events
+
+
+
     for (const AlertEvent &event : alertEvents) {
-        QString acknowledged = event.acknowledged ? "Acknowledged" : "Not Acknowledged";
-        QString eventText = QString("[%1] ALERT: %2 (BG: %3 mmol/L, %4)")
-                             .arg(event.timestamp.toString("yyyy-MM-dd hh:mm:ss"))
-                             .arg(event.alertType)
-                             .arg(event.bgValue)
-                             .arg(acknowledged);
-        sortedEvents.insert(event.timestamp, eventText);
+
+        QTableWidgetItem *dateTimeItem = new QTableWidgetItem(event.timestamp.toString("yyyy-MM-dd hh:mm"));
+
+        QTableWidgetItem *typeItem = new QTableWidgetItem("Alert");
+
+        QTableWidgetItem *valueItem = new QTableWidgetItem(event.alertType);
+
+
+
+        QString details = "BG: " + QString::number(event.bgValue) + " mmol/L";
+
+        if (event.acknowledged) {
+
+            details += ", Acknowledged";
+
+        } else {
+
+            details += ", Not Acknowledged";
+
+        }
+
+
+
+        QTableWidgetItem *detailsItem = new QTableWidgetItem(details);
+
+
+
+        dateTimeItem->setFlags(dateTimeItem->flags() & ~Qt::ItemIsEditable);
+
+        typeItem->setFlags(typeItem->flags() & ~Qt::ItemIsEditable);
+
+        valueItem->setFlags(valueItem->flags() & ~Qt::ItemIsEditable);
+
+        detailsItem->setFlags(detailsItem->flags() & ~Qt::ItemIsEditable);
+
+
+
+        ui->historyTable->setItem(currentRow, 0, dateTimeItem);
+
+        ui->historyTable->setItem(currentRow, 1, typeItem);
+
+        ui->historyTable->setItem(currentRow, 2, valueItem);
+
+        ui->historyTable->setItem(currentRow, 3, detailsItem);
+
+
+
+        currentRow++;
+
     }
-    
-    // Format and add setting change events
+
+
+
     for (const SettingChangeEvent &event : settingEvents) {
-        QString eventText = QString("[%1] SETTING: %2 (Changed from %3 to %4)")
-                             .arg(event.timestamp.toString("yyyy-MM-dd hh:mm:ss"))
-                             .arg(event.settingName)
-                             .arg(event.oldValue)
-                             .arg(event.newValue);
-        sortedEvents.insert(event.timestamp, eventText);
+
+        QTableWidgetItem *dateTimeItem = new QTableWidgetItem(event.timestamp.toString("yyyy-MM-dd hh:mm"));
+
+        QTableWidgetItem *typeItem = new QTableWidgetItem("Setting");
+
+        QTableWidgetItem *valueItem = new QTableWidgetItem(event.settingName);
+
+        QTableWidgetItem *detailsItem = new QTableWidgetItem("Changed from " + event.oldValue + " to " + event.newValue);
+
+
+
+        dateTimeItem->setFlags(dateTimeItem->flags() & ~Qt::ItemIsEditable);
+
+        typeItem->setFlags(typeItem->flags() & ~Qt::ItemIsEditable);
+
+        valueItem->setFlags(valueItem->flags() & ~Qt::ItemIsEditable);
+
+        detailsItem->setFlags(detailsItem->flags() & ~Qt::ItemIsEditable);
+
+
+
+        ui->historyTable->setItem(currentRow, 0, dateTimeItem);
+
+        ui->historyTable->setItem(currentRow, 1, typeItem);
+
+        ui->historyTable->setItem(currentRow, 2, valueItem);
+
+        ui->historyTable->setItem(currentRow, 3, detailsItem);
+
+
+
+        currentRow++;
+
     }
-    
-    // Format and add status events
+
+
+
     for (const StatusEvent &event : statusEvents) {
-        QString eventText = QString("[%1] STATUS: %2 (%3)")
-                             .arg(event.timestamp.toString("yyyy-MM-dd hh:mm:ss"))
-                             .arg(event.statusType)
-                             .arg(event.statusDetails);
-        sortedEvents.insert(event.timestamp, eventText);
+
+        QTableWidgetItem *dateTimeItem = new QTableWidgetItem(event.timestamp.toString("yyyy-MM-dd hh:mm"));
+
+        QTableWidgetItem *typeItem = new QTableWidgetItem("Status");
+
+        QTableWidgetItem *valueItem = new QTableWidgetItem(event.statusType);
+
+        QTableWidgetItem *detailsItem = new QTableWidgetItem(event.statusDetails);
+
+
+
+        dateTimeItem->setFlags(dateTimeItem->flags() & ~Qt::ItemIsEditable);
+
+        typeItem->setFlags(typeItem->flags() & ~Qt::ItemIsEditable);
+
+        valueItem->setFlags(valueItem->flags() & ~Qt::ItemIsEditable);
+
+        detailsItem->setFlags(detailsItem->flags() & ~Qt::ItemIsEditable);
+
+
+
+        ui->historyTable->setItem(currentRow, 0, dateTimeItem);
+
+        ui->historyTable->setItem(currentRow, 1, typeItem);
+
+        ui->historyTable->setItem(currentRow, 2, valueItem);
+
+        ui->historyTable->setItem(currentRow, 3, detailsItem);
+
+
+
+        currentRow++;
     }
-    
-    // Display all events in the text edit, newest first
-    QString historyText;
-    auto it = sortedEvents.end();
-    while (it != sortedEvents.begin()) {
-        --it;
-        historyText += it.value() + "\n";
-    }
-    
-    ui->historyTextEdit->setText(historyText);
+
+    ui->historyTable->sortItems(0, Qt::DescendingOrder);
+    ui->historyTable->resizeColumnsToContents();
+
 }
 
 void ContentWidget::updateSettingsTab() {

@@ -38,6 +38,7 @@ public slots:
 
 signals:
     void openBolus();
+    void openOptions();
     void cancelBolusRequested();
 
 private slots:
