@@ -17,6 +17,7 @@ signals:
     void insulinLevelChanged(int newLevel);
 
 private:
+    StatusBar* statusBar = StatusBar::getInstance();
     Pump* pump;
     int remainingInsulin;
 };

@@ -44,8 +44,11 @@ void StatusBar::onBatteryLevelChanged(int level) {
 }
 
 void StatusBar::onUnitsChanged(int level) {
-    // implement units text update logic here
+
     ui->insulinLevel->setValue(level);
+
+    ui->insulinLevel->setFormat(QString::number(level) + " U");
+    setBolus(level);
 }
 
 void StatusBar :: setBolus(bool b){
