@@ -52,6 +52,9 @@ ContentWidget::ContentWidget(QWidget *parent)
     if (ui->bolusButton) {
         connect(ui->bolusButton, &QPushButton::clicked, this, &ContentWidget::openBolus);
     }
+    if (ui->optionsButton) {
+        connect(ui->optionsButton, &QPushButton::clicked, this, &ContentWidget::openOptions);
+    }
 
 
     QStringList profileNames = Profile::getAvailableProfiles();
@@ -144,8 +147,7 @@ ContentWidget::~ContentWidget()
 
 void ContentWidget::on_optionsButton_clicked()
 {
-    OptionsWindow options(pump, this);
-    options.exec();
+    qDebug() << "Navigate to the options";
 }
 
 void ContentWidget::displayAlert(const QString &alertMessage, double bgValue)
@@ -257,9 +259,10 @@ void ContentWidget::updateHistoryTab() {
         return;
     }
 
+
+
     QVector<GlucoseReading> glucoseReadings = activeProfile->getGlucoseReadings();
     QVector<InsulinDose> insulinDoses = activeProfile->getInsulinDoses();
-
     PumpHistory* pumpHistory = pump->getPumpHistory();
     QVector<BasalRateEvent> basalEvents;
     QVector<BolusEvent> bolusEvents;
@@ -275,7 +278,6 @@ void ContentWidget::updateHistoryTab() {
         statusEvents = pumpHistory->getStatusEvents();
     }
 
-
     int totalRows = glucoseReadings.size() + insulinDoses.size() +
                     basalEvents.size() + bolusEvents.size() +
                     alertEvents.size() + settingEvents.size() +
@@ -284,8 +286,6 @@ void ContentWidget::updateHistoryTab() {
     ui->historyTable->setRowCount(totalRows);
 
     int currentRow = 0;
-
-
     for (const GlucoseReading &reading : glucoseReadings) {
         QTableWidgetItem *dateTimeItem = new QTableWidgetItem(reading.timestamp.toString("yyyy-MM-dd hh:mm"));
         QTableWidgetItem *typeItem = new QTableWidgetItem("Glucose");
@@ -319,6 +319,7 @@ void ContentWidget::updateHistoryTab() {
         ui->historyTable->setItem(currentRow, 0, dateTimeItem);
         ui->historyTable->setItem(currentRow, 1, typeItem);
         ui->historyTable->setItem(currentRow, 2, valueItem);
+
         ui->historyTable->setItem(currentRow, 3, detailsItem);
 
         currentRow++;
@@ -350,12 +351,15 @@ void ContentWidget::updateHistoryTab() {
         QTableWidgetItem *valueItem = new QTableWidgetItem(QString::number(event.amount) + " U");
 
         QString details = event.bolusType;
+
         if (event.duration > 0) {
             details += ", " + QString::number(event.duration) + " min";
         }
+
         if (event.carbInput > 0) {
             details += ", " + QString::number(event.carbInput) + " g carbs";
         }
+
         if (event.bgInput > 0) {
             details += ", BG: " + QString::number(event.bgInput) + " mmol/L";
         }

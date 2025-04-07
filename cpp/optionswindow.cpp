@@ -22,7 +22,8 @@ OptionsWindow::~OptionsWindow()
     delete ui;
 }
 
-void OptionsWindow::on_okorcancel_accepted()
+
+void OptionsWindow::on_acceptButton_clicked()
 {
     if (pump && pump->getActiveProfile()) {
         double newBasalRate = ui->basalRate->value();
@@ -31,11 +32,11 @@ void OptionsWindow::on_okorcancel_accepted()
         pump->recordAlert("Basal rate successfully updated to " , newBasalRate);
         contentWidget->updateSettingsTab();
     }
-
-    accept();
 }
 
-void OptionsWindow::on_okorcancel_rejected()
+
+void OptionsWindow::on_pushButton_clicked()
 {
-    reject();
+    emit powerOff();
 }
+
