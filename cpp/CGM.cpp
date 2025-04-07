@@ -7,7 +7,7 @@
 #include <QRandomGenerator>
 #include <QDateTime>
 #include <QDebug>
-#include "headers/Pump.h";
+#include "headers/Pump.h"
 
 CGM::CGM(Pump* pump, QObject *parent)
     : QObject(parent),CGMON(true), currentGlucoseLevel(7.0), controlIQActive(true),
@@ -26,6 +26,8 @@ CGM::~CGM()
 
 void CGM::applyInsulinEffect(double effect) {
     insulinEffect += effect;
+    int remainingInsulin = pump->getInsulinCartridge()->getRemainingInsulin();
+    pump->getInsulinCartridge()->setRemainingInsulin(remainingInsulin - effect);
 }
 
 void CGM::setProfile(Profile* p) {
@@ -118,12 +120,18 @@ void CGM::update() {
     double glucose = currentGlucoseLevel;
 
     // Natural rise in glucose
-    glucose += 0.3;  
-
+    glucose += 0.3;
+    double previousbasal = 0;
     // Apply basal insulin effect.
     // For simulation, assume each unit of basal insulin lowers glucose by 0.05 mmol/L per cycle.
     if (pump && pump->getActiveProfile()) {
         double basal = pump->getActiveProfile()->getBasalRate();
+        if (basal<=0 && previousbasal == basal){
+            void basalDeliveryStopped();
+        } else if (previousbasal != basal && basal > 0 ){
+            void basalDeliveryStarted();
+        }
+
         qDebug() << basal;
         double basalEffect = basal * 0.05;
         glucose -= basalEffect;
@@ -153,9 +161,12 @@ void CGM::update() {
 
     // Decay the insulin effect over time
     insulinEffect *= 0.9;
-    if (insulinEffect < 0.01)
+    if (insulinEffect < 0.01){
         insulinEffect = 0;
-
+    }
+    if (glucose <= 0){
+        glucose = 0;
+    }
     GlucoseReading newReading;
     newReading.value = glucose;
     newReading.timestamp = QDateTime::currentDateTime();

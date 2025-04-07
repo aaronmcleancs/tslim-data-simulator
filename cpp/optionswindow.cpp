@@ -27,7 +27,7 @@ void OptionsWindow::on_acceptButton_clicked()
 {
     if (pump && pump->getActiveProfile()) {
         double newBasalRate = ui->basalRate->value();
-        pump->updateProfile(pump->getActiveProfile()->getName(), "basal rate", newBasalRate);
+        pump->updateProfile(pump->getActiveProfile()->getName(), "BR", newBasalRate);
         pump->recordBasalRateChange(newBasalRate);
         pump->recordAlert("Basal rate successfully updated to " , newBasalRate);
         contentWidget->updateSettingsTab();

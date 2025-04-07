@@ -1,5 +1,6 @@
 #include "headers/ControlIQ.h"
 #include <QDebug>
+#include "headers/BolusCalculator.h"
 
 ControlIQ::ControlIQ(Pump* p, QObject *parent)
     : QObject(parent), pump(p)
@@ -8,6 +9,7 @@ ControlIQ::ControlIQ(Pump* p, QObject *parent)
         connect(pump->getCGM(), &CGM::newGlucoseReading, this, &ControlIQ::evaluate);
         qDebug() << "ControlIQ connected to CGM's newGlucoseReading signal";
     }
+
 }
 
 
@@ -36,7 +38,6 @@ void ControlIQ::adjustInsulinDelivery(double glucose) {
 
     auto range = profile->getTargetGlucoseRange();  // e.g., (min=3.9, max=10.0)
     double basal = profile->getBasalRate();
-    double correctionFactor = profile->getCorrectionFactor();
     int remainingInsulin = pump->getInsulinCartridge()->getRemainingInsulin();
 
     if (remainingInsulin <= 0) {
@@ -47,41 +48,18 @@ void ControlIQ::adjustInsulinDelivery(double glucose) {
     }
 
     // Correction when glucose is 20 mmol/L or above.
-     if (glucose >= 20.0) {
-        double target = 6.1;
-        double difference = glucose - target;
-        // Deliver 100%
-        double correctionBolusUnits = (difference * 1.0) / correctionFactor;
-        if (correctionBolusUnits > remainingInsulin)
-            correctionBolusUnits = remainingInsulin;
+    if (glucose > 10.0) {
+        BolusCalculator b1;
+        double total_carbs = pump->getCGM()->getCurrentCarbs();
+        InsulinCartridge* Cartridge = pump->getInsulinCartridge();
+        double correctionBolusUnits = b1.total_bolus( total_carbs,glucose, profile, Cartridge);
 
         pump->recordBolus(correctionBolusUnits, "Correction");
         emit pump->bolusDelivered(correctionBolusUnits);
-        pump->getInsulinCartridge()->setRemainingInsulin(remainingInsulin - correctionBolusUnits);
         qDebug() << "[ControlIQ] Correction bolus:" << correctionBolusUnits << "units for glucose" << glucose;
-
-        // Apply insulin effect: assume each unit lowers glucose by 1.0 mmol/L.
-        double reduction = correctionBolusUnits * 1.0;
-        pump->getCGM()->applyInsulinEffect(reduction);
+        pump->getCGM()->applyInsulinEffect(correctionBolusUnits);
     }
-    else if (glucose >= 10.0) {
-        double target = 6.1;
-        double difference = glucose - target;
-        // Deliver 60% of the difference (converted by correction factor)
-        double correctionBolusUnits = (difference * 0.6) / correctionFactor;
-        if (correctionBolusUnits > remainingInsulin)
-            correctionBolusUnits = remainingInsulin;
-
-        pump->recordBolus(correctionBolusUnits, "Correction");
-        emit pump->bolusDelivered(correctionBolusUnits);
-        pump->getInsulinCartridge()->setRemainingInsulin(remainingInsulin - correctionBolusUnits);
-        qDebug() << "[ControlIQ] Correction bolus:" << correctionBolusUnits << "units for glucose" << glucose;
-
-        // Apply insulin effect: assume each unit lowers glucose by 1.0 mmol/L.
-        double reduction = correctionBolusUnits * 1.0;
-        pump->getCGM()->applyInsulinEffect(reduction);
-    }
-    else if (glucose < range.first) {
+    else if (glucose < range.first || glucose <= 3.9) {
         // If too low, suspend basal delivery.
         emit pump->basalDeliveryStopped();
         pump->recordAlert("Glucose Low - Suspend", glucose);
@@ -90,13 +68,12 @@ void ControlIQ::adjustInsulinDelivery(double glucose) {
     else {
         // For normal values, deliver the normal basal rate.
         pump->recordBasalRateChange(basal);
-        emit pump->basalDeliveryStarted();
         qDebug() << "[ControlIQ] Glucose normal (" << glucose << "). Basal delivered.";
     }
 }
 
 void ControlIQ::triggerSafetyCheck(double glucose) {
-    if (glucose < 2.8 || glucose > 20.0) {
+    if (glucose <= 3.9 || glucose >= 10.0) {
         pump->recordAlert("Critical Glucose", glucose);
         qDebug() << "[ControlIQ] CRITICAL: Glucose=" << glucose << ". ControlIQ will activate safety.";
     }

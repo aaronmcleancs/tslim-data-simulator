@@ -1,8 +1,8 @@
 #include "headers/InsulinCartridge.h"
-#include "headers/Pump.h";
+#include "headers/Pump.h"
 
 
-InsulinCartridge::InsulinCartridge(Pump* pump, QObject *parent) : QObject(parent), pump(pump), remainingInsulin(100) // Defaulted to 100 units change if u guys want
+InsulinCartridge::InsulinCartridge(Pump* pump, QObject *parent) : QObject(parent), pump(pump), remainingInsulin(300) // Defaulted to 100 units change if u guys want
 {}
 
 int InsulinCartridge::getRemainingInsulin() const
