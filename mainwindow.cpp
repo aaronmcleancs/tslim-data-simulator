@@ -24,7 +24,7 @@ MainWindow::MainWindow(StatusBar *statusBar, QWidget *parent)
     lockScreen = new LockScreen(this->statusBar);
     contentWidget = new ContentWidget();
     pump = contentWidget->getPump();
-    optionsWidget = new OptionsWindow(pump, nullptr);
+    optionsWidget = new OptionsWindow(pump, contentWidget);
 
     bolusWidget = new bolus(pump, contentWidget ,nullptr);
     powerOffWidget = new PowerOff(nullptr);
