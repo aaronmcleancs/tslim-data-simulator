@@ -191,39 +191,19 @@
         </attribute>
         <layout class="QVBoxLayout" name="verticalLayout_2">
          <item>
-          <widget class="QTableWidget" name="historyTable">
-           <property name="alternatingRowColors">
+          <widget class="QTextEdit" name="historyTextEdit">
+           <property name="readOnly">
             <bool>true</bool>
            </property>
-           <property name="selectionMode">
-            <enum>QAbstractItemView::NoSelection</enum>
+           <property name="font">
+            <font>
+             <family>Courier New</family>
+             <pointsize>10</pointsize>
+            </font>
            </property>
-           <property name="selectionBehavior">
-            <enum>QAbstractItemView::SelectItems</enum>
+           <property name="styleSheet">
+            <string notr="true">background-color: #000000; color: #00FF00;</string>
            </property>
-           <property name="sortingEnabled">
-            <bool>true</bool>
-           </property>
-           <column>
-            <property name="text">
-             <string>Date/Time</string>
-            </property>
-           </column>
-           <column>
-            <property name="text">
-             <string>Type</string>
-            </property>
-           </column>
-           <column>
-            <property name="text">
-             <string>Value</string>
-            </property>
-           </column>
-           <column>
-            <property name="text">
-             <string>Details</string>
-            </property>
-           </column>
           </widget>
          </item>
         </layout>
