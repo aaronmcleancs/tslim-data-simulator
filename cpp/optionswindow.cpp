@@ -1,7 +1,7 @@
 #include "headers/optionswindow.h"
 #include "ui_optionswindow.h"
 #include <QMessageBox>
-#include "headers/contentWidget.h"
+#include "headers/contentwidget.h"
 
 OptionsWindow::OptionsWindow(Pump* pump, ContentWidget* contentWidget, QWidget *parent) :
     QDialog(parent),

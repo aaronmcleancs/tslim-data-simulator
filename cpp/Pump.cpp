@@ -172,7 +172,7 @@ void Pump::selectActiveProfile(QString name){
             qWarning() << "CGM is null in selectActiveProfile!";
         }
 
-    
+    emit activeProfileChanged(activeProfile);
     recordStatusEvent("Profile Change", "Changed active profile from " + oldProfile + " to " + name);
 }
 

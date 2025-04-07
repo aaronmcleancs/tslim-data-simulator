@@ -35,10 +35,7 @@
       <string notr="true"/>
      </property>
      <property name="frameShape">
-      <enum>QFrame::Shape::StyledPanel</enum>
-     </property>
-     <property name="frameShadow">
-      <enum>QFrame::Shadow::Raised</enum>
+      <enum>QFrame::NoFrame</enum>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_3">
       <item>
@@ -52,10 +49,7 @@
          <string>Current Glucose</string>
         </property>
         <property name="textFormat">
-         <enum>Qt::TextFormat::PlainText</enum>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignmentFlag::AlignCenter</set>
+         <enum>Qt::PlainText</enum>
         </property>
        </widget>
       </item>
@@ -67,7 +61,7 @@
          </font>
         </property>
         <property name="contextMenuPolicy">
-         <enum>Qt::ContextMenuPolicy::DefaultContextMenu</enum>
+         <enum>Qt::NoContextMenu</enum>
         </property>
         <property name="autoFillBackground">
          <bool>false</bool>
@@ -79,10 +73,7 @@
          <string>123 mg/dL</string>
         </property>
         <property name="textFormat">
-         <enum>Qt::TextFormat::PlainText</enum>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignmentFlag::AlignCenter</set>
+         <enum>Qt::PlainText</enum>
         </property>
        </widget>
       </item>
@@ -106,9 +97,6 @@
         </item>
         <item>
          <spacer name="horizontalSpacer_2">
-          <property name="orientation">
-           <enum>Qt::Orientation::Horizontal</enum>
-          </property>
           <property name="sizeHint" stdset="0">
            <size>
             <width>40</width>
@@ -189,7 +177,7 @@
         </size>
        </property>
        <property name="currentIndex">
-        <number>3</number>
+        <number>0</number>
        </property>
        <widget class="QWidget" name="tab">
         <property name="minimumSize">
@@ -208,10 +196,10 @@
             <bool>true</bool>
            </property>
            <property name="selectionMode">
-            <enum>QAbstractItemView::SelectionMode::SingleSelection</enum>
+            <enum>QAbstractItemView::NoSelection</enum>
            </property>
            <property name="selectionBehavior">
-            <enum>QAbstractItemView::SelectionBehavior::SelectRows</enum>
+            <enum>QAbstractItemView::SelectItems</enum>
            </property>
            <property name="sortingEnabled">
             <bool>true</bool>
@@ -269,7 +257,7 @@
           </rect>
          </property>
          <property name="gridStyle">
-          <enum>Qt::PenStyle::SolidLine</enum>
+          <enum>Qt::NoPen</enum>
          </property>
          <attribute name="horizontalHeaderCascadingSectionResizes">
           <bool>false</bool>
@@ -338,13 +326,13 @@
                </font>
               </property>
               <property name="contextMenuPolicy">
-               <enum>Qt::ContextMenuPolicy::DefaultContextMenu</enum>
+               <enum>Qt::NoContextMenu</enum>
               </property>
               <property name="text">
                <string>Basal Rate:</string>
               </property>
               <property name="textFormat">
-               <enum>Qt::TextFormat::PlainText</enum>
+               <enum>Qt::PlainText</enum>
               </property>
              </widget>
             </item>
