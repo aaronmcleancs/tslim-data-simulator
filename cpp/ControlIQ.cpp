@@ -19,7 +19,6 @@ void ControlIQ::evaluate(double glucose)
 
     //qDebug() << "ControlIQ evaluating with glucose:" << glucose;
     adjustInsulinDelivery(glucose);
-    triggerSafetyCheck(glucose);
 
 
     // Proceed with sending glucose to CGM
@@ -72,9 +71,4 @@ void ControlIQ::adjustInsulinDelivery(double glucose) {
     }
 }
 
-void ControlIQ::triggerSafetyCheck(double glucose) {
-    if (glucose <= 3.9 || glucose >= 10.0) {
-        pump->recordAlert("Critical Glucose", glucose);
-        qDebug() << "[ControlIQ] CRITICAL: Glucose=" << glucose << ". ControlIQ will activate safety.";
-    }
-}
+

@@ -173,6 +173,14 @@ void CGM::update() {
     profile->addGlucoseReading(newReading);
 
     currentGlucoseLevel = glucose;
+    if (glucose >= 10.0) {
+        pump->recordAlert("Critical Glucose", glucose);
+        qDebug() << "[ControlIQ] CRITICAL: Glucose=" << glucose << ". HIGH.";
+    }
+    if (glucose <= 3.9 ) {
+        pump->recordAlert("Critical Glucose", glucose);
+        qDebug() << "[ControlIQ] CRITICAL: Glucose=" << glucose << ".  LOW.";
+    }
 }
 
 
