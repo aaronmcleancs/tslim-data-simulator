@@ -1,22 +1,22 @@
 #include "headers/CGM.h"
 #include "headers/Profile.h"
 #include "headers/Battery.h"
-#include "headers/contentwidget.h"
-#include "headers/BolusCalculator.h"
 #include <cstdlib>
 #include <ctime>
 #include <QTimer>
 #include <QRandomGenerator>
 #include <QDateTime>
 #include <QDebug>
+#include "headers/Pump.h";
 
-CGM::CGM(QObject *parent)
-    : QObject(parent), currentGlucoseLevel(0.0), controlIQActive(false), monitoringTimer(new QTimer(this)), battery(nullptr), profile(nullptr)
-{
-    monitoringTimer->setInterval(1000);
+CGM::CGM(Pump* pump, QObject *parent)
+    : QObject(parent),CGMON(true), currentGlucoseLevel(7.0), controlIQActive(true),
+    monitoringTimer(new QTimer(this)), battery(nullptr), profile(nullptr), insulinEffect(0.0),pump(pump) {
+    monitoringTimer->setInterval(5000);
     connect(monitoringTimer, &QTimer::timeout, this, &CGM::update);
-
+    startTime = QDateTime::currentDateTime();
     connect(this, &CGM::newGlucoseReading, this, &CGM::updateGlucoseLevelFromControlIQ);
+    fetchLatestGlucoseReading();
 }
 
 CGM::~CGM()
@@ -24,15 +24,13 @@ CGM::~CGM()
     delete monitoringTimer;
 }
 
-
+void CGM::applyInsulinEffect(double effect) {
+    insulinEffect += effect;
+}
 
 void CGM::setProfile(Profile* p) {
     profile = p;
     qDebug() << "CGM: Profile set to" << (profile ? profile->getName() : "null");
-}
-
-Profile* CGM::getActiveProfie(){
-    return profile;
 }
 
 void CGM::startMonitoring() {
@@ -41,7 +39,9 @@ void CGM::startMonitoring() {
         connect(monitoringTimer, &QTimer::timeout, this, &CGM::update);
     }
     monitoringTimer->start(5000); // or whatever interval
+    CGMON=true;
     //qDebug() << "CGM: Monitoring started";
+    startTime = QDateTime::currentDateTime();
 }
 
 
@@ -49,11 +49,12 @@ void CGM::stopMonitoring()
 {
     monitoringTimer->stop();
     qDebug() << "CGM monitoring stopped.";
+    CGMON =false;
 }
 
 double CGM::getCurrentCarbs() const
 {
-    return currentCarbs;
+    return currentcarbs;
 }
 
 double CGM::getCurrentGlucoseLevel() const
@@ -61,21 +62,22 @@ double CGM::getCurrentGlucoseLevel() const
     return currentGlucoseLevel;
 }
 
-double CGM::estimateCarbs()
+void CGM::estimateCarbs()
 {
     if (profile) {
         QVector<GlucoseReading> readings = profile->getGlucoseReadings();
-        if (readings.size() < 2) return 0;  // Need at least 2 readings to estimate carbs
+        if (!(readings.size() < 2)) { // Need at least 2 readings to estimate carbs
 
-        double lastGlucose = readings.last().value;
-        double prevGlucose = readings[readings.size() - 2].value;
+            double lastGlucose = readings.last().value;
+            double prevGlucose = readings[readings.size() - 2].value;
 
-        double glucoseRise = lastGlucose - prevGlucose;
-        double glucoseToCarbFactor = 5.0;  // Estimate: 5 mg/dL per gram of carbs
+            double glucoseRise = lastGlucose - prevGlucose;
+            double glucoseToCarbFactor = 5.0;  // Estimate: 5 mg/dL per gram of carbs
 
-        return glucoseRise / glucoseToCarbFactor;
+            currentcarbs = glucoseRise / glucoseToCarbFactor;
+        }
     }
-    return 0;
+
 }
 
 
@@ -94,15 +96,12 @@ void CGM::setControlIQActive(bool active) {
     qDebug() << "ControlIQ active set to:" << controlIQActive;
 }
 
-// Getter for controlIQActive
 bool CGM::isControlIQActive() const {
     return controlIQActive;
 }
 
-// IM GONNA FIX THIS TONIGHT
-void CGM::update()
-{
-    qDebug() << currentGlucoseLevel << "and" << controlIQActive << "and "<< controlIQNewGlucoseLevel;
+// FIXED ATLAST
+void CGM::update() {
     if (!profile) {
         qDebug() << "Profile is null, glucose reading not added!";
         return;
@@ -111,30 +110,64 @@ void CGM::update()
         stopMonitoring();
         qDebug() << "Battery is empty. Stopping CGM monitoring.";
         return;
+    } else if (!CGMON) {
+        startMonitoring();
+        return;
     }
 
     double glucose = currentGlucoseLevel;
 
-    if (controlIQActive == true) {
-        emit newGlucoseReading(glucose);
-        glucose = controlIQNewGlucoseLevel;  // ControlIQ adjusted glucose
-        qDebug() << "CGM using adjusted glucose from ControlIQ:" << glucose;
-    } else {
-        qDebug() << "CGM using normal data:" << glucose;
+    // Natural rise in glucose
+    glucose += 0.3;  
 
-        fetchLatestGlucoseReading();
+    // Apply basal insulin effect.
+    // For simulation, assume each unit of basal insulin lowers glucose by 0.05 mmol/L per cycle.
+    if (pump && pump->getActiveProfile()) {
+        double basal = pump->getActiveProfile()->getBasalRate();
+        qDebug() << basal;
+        double basalEffect = basal * 0.05;
+        glucose -= basalEffect;
+
+        // Convert basal from hourly to per-cycle units (assuming cycle is 5 seconds)
+        double basalUnitsPerCycle = basal / (3600 / 5); // basal per 5 seconds
+        pump->getInsulinCartridge()->setRemainingInsulin(
+            pump->getInsulinCartridge()->getRemainingInsulin() - basalUnitsPerCycle
+            );
+        emit pump->recordBasalRateChange(basalUnitsPerCycle);
     }
 
 
+    qDebug() << glucose << "glucose before controliq";
+
+    if (controlIQActive == true) {
+        emit newGlucoseReading(glucose);
+        // If ControlIQ modifies the value, use its adjusted value.
+        glucose = controlIQNewGlucoseLevel;
+    } else {
+        //qDebug() << "CGM using normal data:" << glucose;
+        fetchLatestGlucoseReading();
+    }
+
+    // Apply any insulin effect (from correction boluses or manual bolus)
+    glucose -= insulinEffect;
+
+    // Decay the insulin effect over time
+    insulinEffect *= 0.9;
+    if (insulinEffect < 0.01)
+        insulinEffect = 0;
+
     GlucoseReading newReading;
     newReading.value = glucose;
-    newReading.timestamp = QDateTime::currentDateTime();  // Timestamp
+    newReading.timestamp = QDateTime::currentDateTime();
     profile->addGlucoseReading(newReading);
+
+    currentGlucoseLevel = glucose;
 }
+
 
 
 void CGM::updateGlucoseLevelFromControlIQ(double newGlucoseLevel)
 {
     controlIQNewGlucoseLevel = newGlucoseLevel;
-    qDebug() << "CGM received glucose reading from ControlIQ:" << newGlucoseLevel;
+    //qDebug() << "CGM received glucose reading from ControlIQ:" << newGlucoseLevel;
 }

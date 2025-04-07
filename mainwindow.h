@@ -8,6 +8,7 @@
 #include "headers/contentwidget.h"
 #include "headers/lockscreen.h"
 #include "headers/powerstatemachine.h"
+#include "headers/optionswindow.h"
 #include "poweroff.h"
 #include "bolus.h"
 
@@ -17,7 +18,8 @@ enum class Route {
     CONTENT,
     BOLUS,
     SETTINGS,
-    POWER_OFF
+    POWER_OFF,
+    OPTIONS
 };
 
 QT_BEGIN_NAMESPACE
@@ -36,6 +38,8 @@ public:
     // Navigate to a specific route
     void navigateToRoute(Route route);
     Pump* getPump() const;
+    ContentWidget* getContentWidget() const;
+    bolus* getBolus() const;
 
 
 
@@ -64,11 +68,12 @@ private:
     LockScreen *lockScreen;
     ContentWidget *contentWidget;
     PowerOff *powerOffWidget;
+    OptionsWindow *optionsWidget;
     bolus *bolusWidget;
     QWidget *currentWidget;
     Pump* pump;
     bool bolusState;
-
+    void handlePowerOff();
 };
 
 #endif // MAINWINDOW_H

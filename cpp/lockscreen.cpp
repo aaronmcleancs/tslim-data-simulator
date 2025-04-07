@@ -58,8 +58,12 @@ void LockScreen::onNumericButtonClicked()
     }
 }
 
+void LockScreen::clearPin() {
+    ui->pinEdit->clear();
+}
+
 void LockScreen::on_clearButton_clicked()
 {
-    ui->pinEdit->clear();
+    clearPin();
 }
 

@@ -58,6 +58,7 @@ signals:
     void alertTriggered(const QString &alertType, double bgValue);
     void settingChanged(const QString &settingName, const QString &oldValue, const QString &newValue);
     void statusUpdated(const QString &statusType, const QString &statusDetails);
+    void activeProfileChanged(Profile* newProfile);
 
 protected :
     Profile *activeProfile;

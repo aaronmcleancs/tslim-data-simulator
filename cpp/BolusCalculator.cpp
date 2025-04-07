@@ -37,14 +37,15 @@ BolusCalculator :: Correction_Bolus_Calculation(int current_glucose){
 //      return 6.4;
 
 }
-double BolusCalculator::total_bolus(int total_carbs, int current_glucose,Profile* p) {
+double BolusCalculator::total_bolus(int total_carbs, int current_glucose,Profile* p, InsulinCartridge* c) {
     activeProfile = p;
+    cartridge = c;
     int carbBolus = Carb_Bolus_Calculation(total_carbs);
     int correctionBolus = Correction_Bolus_Calculation(current_glucose);
     double totalBolus = carbBolus + correctionBolus;
-    bolus = totalBolus;
+    bolus = totalBolus - 1.75;
 
-    return totalBolus;
+    return bolus;
 }
 
 

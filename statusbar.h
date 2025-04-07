@@ -18,14 +18,15 @@ public:
     ~StatusBar();
     static StatusBar* getInstance();
     void setBolus(bool b);
-
+public slots:
+    void onUnitsChanged(int level);
 private:
     Ui::StatusBar *ui;
     static StatusBar* instance;
 
 private slots:
     void onBatteryLevelChanged(int level);
-    void onUnitsChanged(int level);
+
 };
 
 #endif

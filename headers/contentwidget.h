@@ -32,19 +32,24 @@ public slots:
     void editProfile();
     void selectProfile();
     void deleteProfile();
-
+    void on_optionsButton_clicked();
     void setBolus(bool b){bolus = b;}
+    void displayAlert(const QString &alertMessage, double bgValue); // i hate alerts if any of you read this
 
 signals:
     void openBolus();
+    void openOptions();
+    void cancelBolusRequested();
 
 private slots:
-    void on_pushButton_clicked();
+    void on_cancelBolus_clicked();
 
 private:
     Ui::ContentWidget *ui;
     Pump *pump;
     bool bolus = false;
+    QTimer *activeTimeTimer;
+    void updateActiveTime();
 };
 
 #endif // CONTENTWIDGET_H

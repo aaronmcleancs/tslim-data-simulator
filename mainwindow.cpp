@@ -23,9 +23,10 @@ MainWindow::MainWindow(StatusBar *statusBar, QWidget *parent)
     // Initialize screens
     lockScreen = new LockScreen(this->statusBar);
     contentWidget = new ContentWidget();
-    this->pump = contentWidget->getPump();
-    
-    bolusWidget = new bolus(pump, nullptr);
+    pump = contentWidget->getPump();
+    optionsWidget = new OptionsWindow(pump, contentWidget);
+
+    bolusWidget = new bolus(pump, contentWidget ,nullptr);
     powerOffWidget = new PowerOff(nullptr);
     // Connect authentication state changes
 
@@ -36,10 +37,14 @@ MainWindow::MainWindow(StatusBar *statusBar, QWidget *parent)
     connect(authManager, &AuthManager::authStateChanged, this, &MainWindow::onAuthStateChanged);
     connect(powerStateMachine, &PowerStateMachine::poweredChanged, this, &MainWindow::onPowerStateChanged);
     connect(powerOffWidget, &PowerOff::powerOn, powerStateMachine, &PowerStateMachine::powerOn);
+    connect(optionsWidget, &OptionsWindow::powerOff, this, &MainWindow::handlePowerOff);
 
     // Connect lock screen unlock signal
     connect(contentWidget, &ContentWidget::openBolus, [this]() {
         navigateToRoute(Route::BOLUS);
+    });
+    connect(contentWidget, &ContentWidget::openOptions, [this]() {
+        navigateToRoute(Route::OPTIONS);
     });
     // QObject::connect(mainWindow, &MainWindow::powerOffRequested,
         //                 powerManager, &PowerStateMachine::handlePowerOffRequest);
@@ -59,6 +64,9 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+bolus* MainWindow::getBolus() const{
+    return bolusWidget;
+}
 void MainWindow::navigateToRoute(Route route)
 {
     // Remove current widget from layout if it exists
@@ -71,8 +79,13 @@ void MainWindow::navigateToRoute(Route route)
     switch (route) {
         case Route::LOCK_SCREEN:
             currentWidget = lockScreen;
+            lockScreen->clearPin();
             break;
-            
+
+        case Route::OPTIONS:
+            currentWidget = optionsWidget;
+        break;
+
         case Route::BOLUS:
             currentWidget = bolusWidget;
             break;
@@ -118,9 +131,19 @@ void MainWindow::onPowerStateChanged(bool power) {
     }
 }
 
+ContentWidget* MainWindow::getContentWidget() const{
+    return contentWidget;
+}
+
 void MainWindow::on_homeButton_clicked()
 {
     AuthManager* authManager = AuthManager::getInstance();
     onAuthStateChanged(authManager->isAuthenticated());
 }
 
+void MainWindow::handlePowerOff()
+{
+    AuthManager* authManager = AuthManager::getInstance();
+    authManager->setAuthenticated(false);
+    powerStateMachine->powerOff();
+}

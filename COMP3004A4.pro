@@ -26,6 +26,7 @@ SOURCES += \
     cpp/QCustomPlot.cpp \
     main.cpp \
     mainwindow.cpp \
+    cpp/optionswindow.cpp \
     poweroff.cpp \
     statusbar.cpp
 HEADERS += \
@@ -45,6 +46,7 @@ HEADERS += \
     headers/statusmodel.h \
     headers/QCustomPlot.h \
     mainwindow.h \
+    headers/optionswindow.h \
     poweroff.h \
     statusbar.h
 
@@ -53,6 +55,7 @@ FORMS += \
     contentwidget.ui \
     lockscreen2.ui \
     mainwindow.ui \
+    optionswindow.ui \
     poweroff.ui \
     statusbar.ui
 

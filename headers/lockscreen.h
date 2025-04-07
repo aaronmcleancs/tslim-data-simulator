@@ -15,6 +15,7 @@ class LockScreen : public QWidget
 
 public:
     explicit LockScreen(QWidget *parent = nullptr);
+    void clearPin();
     ~LockScreen();
 signals:
     // Signal when unlock is successful
