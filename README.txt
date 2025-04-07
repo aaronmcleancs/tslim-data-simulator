@@ -2,7 +2,7 @@ COMP3004 Final Project
 
 ### USAGE ###
 
-*tested for comppilation on the official COMP3004 VM 
+*tested for compilation on the COMP3004 VM
 ~qmake
 ~make
 ~./COMP3004A4
