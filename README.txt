@@ -1,5 +1,5 @@
-COMP3004 Final Project
-======================
+COMP3004 Final Project Team 34
+==============================
 Video
 -----
 - Demonstration video
