@@ -36,17 +36,17 @@ TEAM MEMBERS & DETAILED RESPONSIBILITIES
 - **Extended Bolus Implementation:**  
   Enhanced bolus features for extended use scenarios.
 - **Testing & Demonstration:**  
-  Conducted scenario tests and prepared demonstration materials to validate bolus functionality.
+  Conducted scenario tests and prepared demonstration materials to validate bolus calculator.
 
 **Félix Aylen**
 - **System Architecture & Profile Management:**  
   Designed the class diagram and developed the structure for managing profiles.
 - **User Profiles (CRUD Operations):**  
-  Implemented complete profile management functionality including creation, editing, and deletion.
+  Implemented complete profile management including creation, editing, and deletion.
 - **Data Visualization:**  
-  Developed data visualization components to graphically display glucose information.
+  Developed data visualization components to display the glucose information.
 - **UI Component Integration:**  
-  Integration of visualization elements with the user interface for an improved user experience.
+  Integration of visualization elements with the user interface.
 
 **Mohammad Abbas**
 - **Glucose Monitoring & Sequence Design:**  
