@@ -62,9 +62,9 @@ TEAM MEMBERS & DETAILED RESPONSIBILITIES
 - **Project Configuration & Data Storage:**  
   Set up the GitHub repository, established init project configuration, and designed the data storage framework.
 - **History Logging & Resource Monitoring:**  
-  Implemented detailed logging of insulin delivery and system state, so users can track all data from a session.
+  Implemented detailed logging of insulin delivery and system state, so users can track all data from a session. Implementented persistence of the user profile data to remain between sessions, and new builds of the project. 
 - **Final Documentation & System Visualization:**  
-  Final documentation and contributed to state machine diagrams.
+  Final documentation and authored state machine diagrams.
 
 FILE STRUCTURE
 --------------
