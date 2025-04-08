@@ -1,5 +1,11 @@
 COMP3004 Final Project
 ======================
+Video
+-----
+- Demonstration video
+  https://www.youtube.com/watch?v=QI7yhzhIrkM
+- Scenario Testing video
+  https://www.youtube.com/watch?v=499WOtazRU8
 
 USAGE
 -----
@@ -20,7 +26,9 @@ TEAM MEMBERS & DETAILED RESPONSIBILITIES
 ------------------------------------------
 **Alan Mirza**
 - **UI Design & Navigation:**  
-  Developed the initial UI skeleton and designed the home screen.
+  Developed the initial UI skeleton and designed the home screen. 
+- **Implemented battery draining/charging. 
+- **Implemented power off/on fucntionality.
 - **Security Implementation:**  
   Integrated PIN security measures to add safety to user details.
 - **Component Integration & Testing:**  
