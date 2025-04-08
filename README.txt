@@ -1,6 +1,6 @@
 COMP3004 Final Project Team 34
 ==============================
-Video
+VIDEO
 -----
 - Demonstration video
   https://www.youtube.com/watch?v=QI7yhzhIrkM
