@@ -18,12 +18,12 @@ public:
     void clearPin();
     ~LockScreen();
 signals:
-    // Signal when unlock is successful
+    // signal when unlock is successful
     void unlocked();
 
 private slots:
     void on_confirmButton_clicked();
-    // Add other button handlers as needed
+    // add other button handlers as needed
 
     void on_clearButton_clicked();
 

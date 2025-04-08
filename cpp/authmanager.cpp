@@ -31,26 +31,24 @@ void AuthManager::setAuthenticated(bool authenticated) {
     }
 }
 
-// Get the current PIN code
+// get current PIN code
 QString AuthManager::getPinCode() const {
     return m_settings.value("pinCode", "1234").toString();
 }
 
-// Set a new PIN code
+// set new PIN code and save
 bool AuthManager::setPinCode(const QString &newPin) {
-    // You could add validation here if needed
     m_settings.setValue("pinCode", newPin);
-    m_settings.sync(); // Make sure to save to disk immediately
+    m_settings.sync();
 
-    // Return true if save was successful
     return m_settings.status() == QSettings::NoError;
 }
 
-// Validate a PIN against the stored PIN
+// validate a PIN against the stored PIN
 bool AuthManager::validatePin(const QString &pin) {
     bool valid = (pin == getPinCode());
 
-    // If PIN is valid, set the authenticated state to true
+    // if PIN valid authenticated state is true
     if (valid) {
         setAuthenticated(true);
     }

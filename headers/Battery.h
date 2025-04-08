@@ -14,15 +14,15 @@ class Battery : public QObject {
 public:
     explicit Battery(QObject *parent = nullptr);
 
-    // Charge level methods
+    // charge level methods
     int getChargeLevel() const;
     void setChargeLevel(int level);
 
-    // Charging state methods
+    // charging state methods
     bool isCharging() const;
     void setCharging(bool charging);
 
-    // Drain configuration
+    // drain configuration
     int getDrainInterval() const;
     void setDrainInterval(int interval);
 
@@ -30,8 +30,8 @@ public:
     void setDrainAmount(int amount);
 
 public slots:
-    void drainBattery();    // Slot called by timer to drain the battery
-    void resetToFull();     // Reset battery to 100%
+    void drainBattery();    // slot called by timer to drain battery
+    void resetToFull();     // reset battery to 100%
 
 signals:
     void chargeLevelChanged(int newLevel);
@@ -46,7 +46,7 @@ private:
     int drainInterval;
     int drainAmount;
 
-    void updateDrainTimer(); // Helper to update timer based on charging state
+    void updateDrainTimer(); // update timer based on charging state
 };
 
 #endif // BATTERY_H

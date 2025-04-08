@@ -48,7 +48,7 @@ ContentWidget::ContentWidget(QWidget *parent)
         });
     }
 
-    // Connect the bolus button if it exists
+    // connect the bolus button
     if (ui->bolusButton) {
         connect(ui->bolusButton, &QPushButton::clicked, this, &ContentWidget::openBolus);
     }
@@ -114,15 +114,15 @@ ContentWidget::ContentWidget(QWidget *parent)
     loadGraphData();
     connect(pump->getActiveProfile(), &Profile::glucoseReadingAdded, this, &ContentWidget::loadGraphData);
 
-    // Connect to profile changes
+    // connect to profile changes
     connect(pump, &Pump::activeProfileChanged, this, [this](Profile* newProfile) {
-        // Disconnect from previous profile
+        // disconnect from previous profile
         if (pump->getActiveProfile()) {
             disconnect(pump->getActiveProfile(), &Profile::glucoseReadingAdded,
                      this, &ContentWidget::loadGraphData);
         }
 
-        // Connect to new profile
+        // connect to new profile
         if (newProfile) {
             connect(newProfile, &Profile::glucoseReadingAdded,
                    this, &ContentWidget::loadGraphData);
@@ -278,10 +278,10 @@ void ContentWidget::updateHistoryTab() {
         statusEvents = pumpHistory->getStatusEvents();
     }
 
-    // Create a multimap to sort all events by timestamp (newest first)
+    // create a multimap to sort all events by newest first
     QMultiMap<QDateTime, QString> sortedEvents;
     
-    // Format and add glucose readings
+    // format and add glucose readings
     for (const GlucoseReading &reading : glucoseReadings) {
         QString eventText = QString("[%1] GLUCOSE: %2 mmol/L (CGM Reading)")
                              .arg(reading.timestamp.toString("yyyy-MM-dd hh:mm:ss"))
@@ -289,7 +289,7 @@ void ContentWidget::updateHistoryTab() {
         sortedEvents.insert(reading.timestamp, eventText);
     }
     
-    // Format and add insulin doses
+    // format and add insulin doses
     for (const InsulinDose &dose : insulinDoses) {
         QString eventText = QString("[%1] INSULIN: %2 U (%3)")
                              .arg(dose.timestamp.toString("yyyy-MM-dd hh:mm:ss"))
@@ -298,7 +298,7 @@ void ContentWidget::updateHistoryTab() {
         sortedEvents.insert(dose.timestamp, eventText);
     }
     
-    // Format and add basal rate events
+    // format and add basal rate events
     for (const BasalRateEvent &event : basalEvents) {
         QString eventText = QString("[%1] BASAL: %2 U/hr (Basal Rate Change)")
                              .arg(event.timestamp.toString("yyyy-MM-dd hh:mm:ss"))
@@ -306,7 +306,7 @@ void ContentWidget::updateHistoryTab() {
         sortedEvents.insert(event.timestamp, eventText);
     }
     
-    // Format and add bolus events
+    // format and add bolus events
     for (const BolusEvent &event : bolusEvents) {
         QString details = event.bolusType;
         if (event.duration > 0) {
@@ -326,7 +326,7 @@ void ContentWidget::updateHistoryTab() {
         sortedEvents.insert(event.timestamp, eventText);
     }
     
-    // Format and add alert events
+    // format and add alert events
     for (const AlertEvent &event : alertEvents) {
         QString acknowledged = event.acknowledged ? "Acknowledged" : "Not Acknowledged";
         QString eventText = QString("[%1] ALERT: %2 (BG: %3 mmol/L, %4)")
@@ -337,7 +337,7 @@ void ContentWidget::updateHistoryTab() {
         sortedEvents.insert(event.timestamp, eventText);
     }
     
-    // Format and add setting change events
+    // format and add setting change events
     for (const SettingChangeEvent &event : settingEvents) {
         QString eventText = QString("[%1] SETTING: %2 (Changed from %3 to %4)")
                              .arg(event.timestamp.toString("yyyy-MM-dd hh:mm:ss"))
@@ -347,7 +347,7 @@ void ContentWidget::updateHistoryTab() {
         sortedEvents.insert(event.timestamp, eventText);
     }
     
-    // Format and add status events
+    // format and add status events
     for (const StatusEvent &event : statusEvents) {
         QString eventText = QString("[%1] STATUS: %2 (%3)")
                              .arg(event.timestamp.toString("yyyy-MM-dd hh:mm:ss"))
@@ -356,7 +356,7 @@ void ContentWidget::updateHistoryTab() {
         sortedEvents.insert(event.timestamp, eventText);
     }
     
-    // Display all events in the text edit, newest first
+    // display all events in the text edit having newest first
     QString historyText;
     auto it = sortedEvents.end();
     while (it != sortedEvents.begin()) {
@@ -417,32 +417,32 @@ void ContentWidget::on_tabWidget_currentChanged(int index) {
 void ContentWidget::setupBloodSugarGraph() {
     QCustomPlot *plot = ui->graph;
 
-    // Remove default axis labels and numbers
-    plot->xAxis->setTickLabels(false); // Hide x-axis numbers
-    plot->xAxis->setLabel(""); // Remove x-axis label
-    plot->yAxis->setLabel("Blood Sugar (mmol/L)"); // Changed unit to mmol/L for 0-20 range
+    // remove default axis labels and numbers
+    plot->xAxis->setTickLabels(false);
+    plot->xAxis->setLabel("");
+    plot->yAxis->setLabel("Blood Sugar (mmol/L)");
 
-    // Configure y-axis for mmol/L range (0-20)
+    // configure y-axis for mmol/L
     plot->yAxis->setRange(0, 20);
     plot->yAxis->grid()->setPen(QPen(QColor(200,200,200), 1, Qt::DotLine));
 
-    // Configure x-axis for 20 discrete readings
+    // Configure x-axis for 20 readings
     QSharedPointer<QCPAxisTickerFixed> fixedTicker(new QCPAxisTickerFixed);
-    fixedTicker->setTickCount(20); // Exactly 20 vertical grid lines
-    fixedTicker->setTickStep(1); // One unit per reading
+    fixedTicker->setTickCount(20);
+    fixedTicker->setTickStep(1);
     fixedTicker->setScaleStrategy(QCPAxisTickerFixed::ssMultiples);
     plot->xAxis->setTicker(fixedTicker);
-    plot->xAxis->setRange(0, 20); // 20 readings
+    plot->xAxis->setRange(0, 20);
 
-    // Style the graph
+    // styling the graph
     plot->addGraph();
     plot->graph(0)->setName("Blood Glucose");
-    plot->graph(0)->setPen(QPen(QColor(0, 120, 215), 2)); // Modern blue
+    plot->graph(0)->setPen(QPen(QColor(0, 120, 215), 2));
 
-    // Add colored zones for blood sugar ranges
+    // add colored zones for blood sugar ranges
     QCPItemRect *lowRange = new QCPItemRect(plot);
     lowRange->setPen(Qt::NoPen);
-    lowRange->setBrush(QColor(255, 100, 100, 30)); // Red tint for low
+    lowRange->setBrush(QColor(255, 100, 100, 30));
     lowRange->topLeft->setTypeY(QCPItemPosition::ptPlotCoords);
     lowRange->topLeft->setCoords(0, 4);
     lowRange->bottomRight->setTypeY(QCPItemPosition::ptPlotCoords);
@@ -450,7 +450,7 @@ void ContentWidget::setupBloodSugarGraph() {
 
     QCPItemRect *targetRange = new QCPItemRect(plot);
     targetRange->setPen(Qt::NoPen);
-    targetRange->setBrush(QColor(100, 255, 100, 30)); // Green tint for target
+    targetRange->setBrush(QColor(100, 255, 100, 30));
     targetRange->topLeft->setTypeY(QCPItemPosition::ptPlotCoords);
     targetRange->topLeft->setCoords(0, 10);
     targetRange->bottomRight->setTypeY(QCPItemPosition::ptPlotCoords);
@@ -466,21 +466,20 @@ void ContentWidget::loadGraphData() {
         return;
     }
 
-    // Get the historical readings
+    // get the history readings
     const QVector<GlucoseReading>& readings = pump->getActiveProfile()->getGlucoseReadings();
     ui->label_2->setText(QString::number(readings.last().value) + " mmol/L");
-    // i just  put this here for convienience, gotta update graph so might aswell update lebell aswell
     QVector<double> xValues, yValues;
     int pointCount = 0;
 
-    // Convert readings to plot data (last 20 readings only)
+    // convert readings to plot data for 20 readings only
     int startIdx = qMax(0, readings.size() - 20);
     for (int i = startIdx; i < readings.size(); ++i) {
         xValues.append(pointCount++);
         yValues.append(readings[i].value);
     }
 
-    // Update the graph
+    // update the graph
     if (!xValues.isEmpty()) {
         ui->graph->graph(0)->setData(xValues, yValues);
         ui->graph->xAxis->setRange(0, qMin(19, xValues.size()-1));

@@ -14,17 +14,17 @@ class StatusModel : public QObject {
 public:
     static StatusModel* getInstance();
 
-    // Battery related methods
+    // battery related methods
     int getBatteryLevel() const;
     void setBatteryLevel(int level);
 
     bool isBatteryCharging() const;
     void setBatteryCharging(bool charging);
 
-    // Configure battery drain parameters
+    // configure battery drain parameters
     void configureBatteryDrain(int interval, int amount);
 
-    // Right text methods
+    // right text methods (insulin on board)
     int getRightText() const;
     void setRightText(int level);
 
@@ -37,7 +37,7 @@ private:
     StatusModel(QObject *parent = nullptr);
     static StatusModel* instance;
 
-    // Member variables
+    // member variables
     Battery* battery;
     int rightText;
 };

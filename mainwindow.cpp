@@ -9,18 +9,18 @@ MainWindow::MainWindow(StatusBar *statusBar, QWidget *parent)
 {
     ui->setupUi(this);
 
-    // Set up status bar
+    // setting up status bar
     this->statusBar->setParent(this);
     
-    // Add status bar to the UI
+    // adding status bar to the UI
     if (ui->statusBarContainer && ui->statusBarContainer->layout()) {
         ui->statusBarContainer->layout()->addWidget(this->statusBar);
     }
     
-    // In MainWindow constructor - instead of creating a new layout:
+    // in MainWindow constructor instead of creating a new layout:
     routerLayout = qobject_cast<QVBoxLayout*>(ui->routerOutlet->layout());
 
-    // Initialize screens
+    // initialize screens
     lockScreen = new LockScreen(this->statusBar);
     contentWidget = new ContentWidget();
     pump = contentWidget->getPump();
@@ -28,7 +28,7 @@ MainWindow::MainWindow(StatusBar *statusBar, QWidget *parent)
 
     bolusWidget = new bolus(pump, contentWidget ,nullptr);
     powerOffWidget = new PowerOff(nullptr);
-    // Connect authentication state changes
+    // Connecting authentication state changes
 
     StatusModel* statusModel = StatusModel::getInstance();
     powerStateMachine = new PowerStateMachine(statusModel);
@@ -39,15 +39,13 @@ MainWindow::MainWindow(StatusBar *statusBar, QWidget *parent)
     connect(powerOffWidget, &PowerOff::powerOn, powerStateMachine, &PowerStateMachine::powerOn);
     connect(optionsWidget, &OptionsWindow::powerOff, this, &MainWindow::handlePowerOff);
 
-    // Connect lock screen unlock signal
+    // connect lock screen unlock signal
     connect(contentWidget, &ContentWidget::openBolus, [this]() {
         navigateToRoute(Route::BOLUS);
     });
     connect(contentWidget, &ContentWidget::openOptions, [this]() {
         navigateToRoute(Route::OPTIONS);
     });
-    // QObject::connect(mainWindow, &MainWindow::powerOffRequested,
-        //                 powerManager, &PowerStateMachine::handlePowerOffRequest);
 
     if (powerStateMachine->isPowered()) {
         if (authManager->isAuthenticated()) {
@@ -69,13 +67,13 @@ bolus* MainWindow::getBolus() const{
 }
 void MainWindow::navigateToRoute(Route route)
 {
-    // Remove current widget from layout if it exists
+    // remove current widget from layout if exists
     if (currentWidget) {
         routerLayout->removeWidget(currentWidget);
         currentWidget->hide();
     }
     
-    // Switch to the appropriate widget based on the route
+    // switch to the widget based on the route
     switch (route) {
         case Route::LOCK_SCREEN:
             currentWidget = lockScreen;
@@ -91,7 +89,6 @@ void MainWindow::navigateToRoute(Route route)
             break;
             
         case Route::SETTINGS:
-            // Add settings screen handling here
             break;
 
         case Route::POWER_OFF:
@@ -99,12 +96,12 @@ void MainWindow::navigateToRoute(Route route)
             break;
         case Route::CONTENT:
         default:
-            // Default to content if unknown route
+            // default
             currentWidget = contentWidget;
             break;
     }
     
-    // Add and show the current widget
+    // add/show the current widget
     routerLayout->addWidget(currentWidget);
     currentWidget->show();
 }

@@ -17,19 +17,19 @@
 int main(int argc, char *argv[]) {
     QApplication a(argc, argv);
 
-    // Get status model instance
+    // get status model instance
     StatusModel* statusModel = StatusModel::getInstance();
 
-    // Create status bar
+    // create status bar
     StatusBar* statusBar = new StatusBar(nullptr);
     MainWindow* mainWindow = new MainWindow(statusBar);
     Pump* pump = mainWindow->getPump();
 
 
-    // Get auth manager instance
+    // get auth manager instance
     AuthManager* authManager = AuthManager::getInstance();
 
-    // Monitor battery level changes
+    // monitor battery level changes
     QObject::connect(statusModel, &StatusModel::batteryLevelChanged,
                     [pump](int level) {
                         qDebug() << "Battery level: " << level << "%";
@@ -47,7 +47,7 @@ int main(int argc, char *argv[]) {
                         }
                     });
 
-    // Connect battery level to status bar
+    // connect battery level to status bar
     QObject::connect(statusModel, &StatusModel::batteryLevelChanged,
                     [statusBar](int level) {
                         // Update battery level in UI
@@ -62,7 +62,7 @@ int main(int argc, char *argv[]) {
     }
     bolus* Bolus = mainWindow->getBolus();
 
-    // Set up connections
+    // set up connections
     QObject::connect(mainWindow, &MainWindow::bolusShift, [=]() {
         Bolus->show();
     });
@@ -80,7 +80,7 @@ int main(int argc, char *argv[]) {
         statusBar->setBolus(true);
     });
 
-    // Show the main window
+    // showing main window
     mainWindow->show();
     return a.exec();
 }

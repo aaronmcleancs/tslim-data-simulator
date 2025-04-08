@@ -13,10 +13,10 @@ StatusModel::StatusModel(QObject *parent)
     : QObject(parent)
     , rightText(0)
 {
-    // Create and initialize the battery
+    // create/initialize battery
     battery = new Battery(this);
 
-    // Connect battery's signals to our own signals to forward changes
+    // connect battery's signals to our own signals for forward changes
     connect(battery, &Battery::chargeLevelChanged,
             this, &StatusModel::batteryLevelChanged);
     connect(battery, &Battery::chargingChanged,
@@ -30,8 +30,6 @@ int StatusModel::getBatteryLevel() const {
 void StatusModel::setBatteryLevel(int level) {
     if (getBatteryLevel() != level) {
         battery->setChargeLevel(level);
-        // No need to emit batteryLevelChanged here as it's already
-        // forwarded by the connection in the constructor
     }
 }
 
@@ -42,8 +40,6 @@ bool StatusModel::isBatteryCharging() const {
 void StatusModel::setBatteryCharging(bool charging) {
     if (isBatteryCharging() != charging) {
         battery->setCharging(charging);
-        // No need to emit batteryChargingChanged here as it's already
-        // forwarded by the connection in the constructor
     }
 }
 

@@ -39,7 +39,6 @@ StatusBar::~StatusBar()
 }
 
 void StatusBar::onBatteryLevelChanged(int level) {
-    // implement battery level update logic here
     ui->batteryStatus->setValue(level);
 }
 
